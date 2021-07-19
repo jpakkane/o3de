@@ -1,0 +1,5 @@
+[wrap-file]
+directory=rapidjson-1.1.0
+
+[provide]
+rapidjson = rapidjson_dep
