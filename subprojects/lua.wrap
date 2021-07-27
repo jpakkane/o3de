@@ -1,0 +1,5 @@
+[wrap-file]
+directory=lua-5.3.5
+
+[provide]
+lua = lua_dep

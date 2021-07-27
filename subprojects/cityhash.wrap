@@ -1,0 +1,5 @@
+[wrap-file]
+directory=cityhash-1.1
+
+[provide]
+cityhash = cityhash_dep
