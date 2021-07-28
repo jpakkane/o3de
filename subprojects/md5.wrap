@@ -1,0 +1,5 @@
+[wrap-file]
+directory=md5-2.0
+
+[provide]
+md5 = md5_dep

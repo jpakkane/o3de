@@ -1,0 +1,17 @@
+azframework_files += files(
+'AzFramework/Application/Application_Linux.cpp',
+'AzFramework/Asset/AssetSystemComponentHelper_Linux.cpp',
+'AzFramework/Process/ProcessWatcher_Linux.cpp',
+'AzFramework/Process/ProcessCommunicator_Linux.cpp',
+'../Common/UnixLike/AzFramework/IO/LocalFileIO_UnixLike.cpp',
+'../Common/Default/AzFramework/Network/AssetProcessorConnection_Default.cpp',
+'../Common/Unimplemented/AzFramework/StreamingInstall/StreamingInstall_Unimplemented.cpp',
+'../Common/Default/AzFramework/TargetManagement/TargetManagementComponent_Default.cpp',
+'AzFramework/Windowing/NativeWindow_Linux.cpp',
+'../Common/Unimplemented/AzFramework/Input/Devices/Gamepad/InputDeviceGamepad_Unimplemented.cpp',
+'../Common/Unimplemented/AzFramework/Input/Devices/Keyboard/InputDeviceKeyboard_Unimplemented.cpp',
+'../Common/Unimplemented/AzFramework/Input/Devices/Motion/InputDeviceMotion_Unimplemented.cpp',
+'../Common/Unimplemented/AzFramework/Input/Devices/Mouse/InputDeviceMouse_Unimplemented.cpp',
+'../Common/Unimplemented/AzFramework/Input/Devices/Touch/InputDeviceTouch_Unimplemented.cpp',
+'../Common/Unimplemented/AzFramework/Input/Devices/VirtualKeyboard/InputDeviceVirtualKeyboard_Unimplemented.cpp',
+)

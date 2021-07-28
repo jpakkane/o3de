@@ -13,5 +13,7 @@ lua_dep = dependency('lua')
 cityhash_dep = dependency('cityhash')
 gtest_dep = dependency('gtest')
 gmock_dep = dependency('gmock')
+lz4_dep = dependency('liblz4')
+md5_dep = dependency('md5') # Would probably make more sense to use OpenSSL's md5 instead.
 
 subdir('Code')
