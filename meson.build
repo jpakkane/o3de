@@ -11,5 +11,7 @@ rapidxml_dep = dependency('rapidxml')
 zstd_dep = dependency('libzstd')
 lua_dep = dependency('lua')
 cityhash_dep = dependency('cityhash')
+gtest_dep = dependency('gtest')
+gmock_dep = dependency('gmock')
 
 subdir('Code')

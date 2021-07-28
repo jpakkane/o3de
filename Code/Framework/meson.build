@@ -1,1 +1,2 @@
 subdir('AzCore')
+subdir('AzTest')
