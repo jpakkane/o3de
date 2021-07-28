@@ -8,3 +8,5 @@ azcore_lib = static_library('AzCore',
     include_directories: 'Platform/Linux',
     dependencies: [rapidjson_dep, rapidxml_dep, zstd_dep, lua_dep, cityhash_dep]
     )
+
+azcore_dep = declare_dependency(include_directories: ['.', 'Platform/Linux'])
