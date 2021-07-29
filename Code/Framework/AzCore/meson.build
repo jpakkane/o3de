@@ -10,3 +10,4 @@ azcore_lib = static_library('AzCore',
     )
 
 azcore_dep = declare_dependency(include_directories: ['.', 'Platform/Linux'])
+
