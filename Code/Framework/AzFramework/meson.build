@@ -8,3 +8,5 @@ azframework_lib = static_library('AzFrameWork',
   include_directories: ['Platform/Linux'],
   dependencies: [azcore_dep, lz4_dep, gridmate_dep, rapidjson_dep, rapidxml_dep, md5_dep, lua_dep],
 )
+
+azframework_dep = declare_dependency(include_directories: '.')
