@@ -6,10 +6,10 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/CardHeader.h>
-#include <AzQtComponents/Components/Widgets/CheckBox.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleHelpers.h>
+#include <AzQtComponents/Components/Widgets/CardHeader.h>
+#include <AzQtComponents/Components/Widgets/CheckBox.h>
 
 #include <QCheckBox>
 #include <QDesktopServices>
@@ -37,7 +37,7 @@ namespace AzQtComponents
 
         static const char* kCardHeaderIconClassName = "CardHeaderIcon";
         static const char* kCardHeaderMenuClassName = "CardHeaderMenu";
-    }
+    } // namespace HeaderBarConstants
 
     int CardHeader::s_iconSize = CardHeader::defaultIconSize();
 
@@ -140,7 +140,7 @@ namespace AzQtComponents
         m_titleLabel->update();
     }
 
-    void CardHeader::setTitleProperty(const char *name, const QVariant &value)
+    void CardHeader::setTitleProperty(const char* name, const QVariant& value)
     {
         m_titleLabel->setProperty(name, value);
     }
@@ -179,7 +179,7 @@ namespace AzQtComponents
             m_warningLabel->setPixmap(m_warningIcon.pixmap(s_iconSize, s_iconSize));
         }
     }
-    
+
     void CardHeader::mockDisabledState(bool disabled)
     {
         m_iconLabel->setDisabled(disabled);
@@ -273,7 +273,7 @@ namespace AzQtComponents
 
     void CardHeader::mouseDoubleClickEvent(QMouseEvent* event)
     {
-        //allow double click to expand/contract
+        // allow double click to expand/contract
         if (event->button() == Qt::LeftButton && isExpandable())
         {
             bool expand = !isExpanded();
@@ -358,4 +358,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_CardHeader.cpp"
+#endif

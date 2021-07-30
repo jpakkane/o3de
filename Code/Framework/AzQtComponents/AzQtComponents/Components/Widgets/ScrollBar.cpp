@@ -6,19 +6,19 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/ScrollBar.h>
+#include <AzCore/std/function/invoke.h>
+#include <AzCore/std/functional.h>
+#include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <AzQtComponents/Components/ConfigHelpers.h>
-#include <AzCore/std/functional.h>
-#include <AzCore/std/function/invoke.h>
+#include <AzQtComponents/Components/Widgets/ScrollBar.h>
 
-#include <QObject>
 #include <QAbstractScrollArea>
-#include <QMap>
-#include <QSettings>
-#include <QScrollBar>
 #include <QEvent>
+#include <QMap>
+#include <QObject>
+#include <QScrollBar>
+#include <QSettings>
 
 #include <QtWidgets/private/qstylesheetstyle_p.h>
 
@@ -104,7 +104,7 @@ namespace AzQtComponents
 
                 switch (event->type())
                 {
-                    case QEvent::HoverEnter:
+                case QEvent::HoverEnter:
                     {
                         if (scrollBarMode == ScrollBar::ScrollBarMode::ShowOnHover)
                         {
@@ -113,7 +113,7 @@ namespace AzQtComponents
                     }
                     break;
 
-                    case QEvent::HoverLeave:
+                case QEvent::HoverLeave:
                     {
                         if (scrollBarMode == ScrollBar::ScrollBarMode::ShowOnHover)
                         {
@@ -122,8 +122,8 @@ namespace AzQtComponents
                     }
                     break;
 
-                    default:
-                        break;
+                default:
+                    break;
                 }
             }
             else if (auto scrollBar = qobject_cast<QScrollBar*>(obj))
@@ -142,7 +142,7 @@ namespace AzQtComponents
 
                     switch (event->type())
                     {
-                        case QEvent::HoverEnter:
+                    case QEvent::HoverEnter:
                         {
                             if (parentScrollArea->cornerWidget())
                             {
@@ -150,7 +150,7 @@ namespace AzQtComponents
                             }
                         }
                         break;
-                        case QEvent::HoverLeave:
+                    case QEvent::HoverLeave:
                         {
                             if (parentScrollArea->cornerWidget())
                             {
@@ -165,11 +165,13 @@ namespace AzQtComponents
             {
                 switch (event->type())
                 {
-                    case QEvent::DynamicPropertyChange:
+                case QEvent::DynamicPropertyChange:
                     {
                         if (auto styleSheet = StyleManager::styleSheetStyle(cornerWidget))
                         {
+#ifndef MESON_BUILD
                             styleSheet->repolish(cornerWidget);
+#endif
                         }
                     }
                     break;
@@ -302,17 +304,19 @@ namespace AzQtComponents
         return s_scrollBarWatcher->uninstall(widget);
     }
 
-    bool ScrollBar::drawScrollBar(const Style* style, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool ScrollBar::drawScrollBar(
+        const Style* style, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         Q_UNUSED(config);
 
+#ifndef MESON_BUILD
         auto styleSheetStyle = qobject_cast<QStyleSheetStyle*>(style->baseStyle());
         if (styleSheetStyle)
         {
             styleSheetStyle->QWindowsStyle::drawComplexControl(QStyle::CC_ScrollBar, option, painter, widget);
             return true;
         }
-
+#endif
         return false;
     }
 

@@ -6,23 +6,23 @@
  *
  */
 
-#include <AzQtComponents/Components/Titlebar.h>
 #include <AzQtComponents/Components/ButtonDivider.h>
 #include <AzQtComponents/Components/ConfigHelpers.h>
-#include <AzQtComponents/Components/StyledDockWidget.h>
 #include <AzQtComponents/Components/DockBar.h>
 #include <AzQtComponents/Components/DockMainWindow.h>
-#include <AzQtComponents/Components/StyleHelpers.h>
 #include <AzQtComponents/Components/DockTabBar.h>
+#include <AzQtComponents/Components/StyleHelpers.h>
+#include <AzQtComponents/Components/StyledDockWidget.h>
+#include <AzQtComponents/Components/Titlebar.h>
 #include <AzQtComponents/Components/Widgets/ElidingLabel.h>
 
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDockWidget>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QMenu>
 #include <QMouseEvent>
-#include <QHBoxLayout>
 #include <QOperatingSystemVersion>
 #include <QStackedLayout>
 #include <QVector>
@@ -119,12 +119,12 @@ namespace AzQtComponents
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
         m_stackedLayout = new QStackedLayout(this);
-        m_stackedLayout->setContentsMargins(0,0,0,0);
+        m_stackedLayout->setContentsMargins(0, 0, 0, 0);
         m_stackedLayout->setSpacing(0);
 
         auto tabBarContainer = new QWidget(this);
         auto tabBarlayout = new QHBoxLayout(tabBarContainer);
-        tabBarlayout->setContentsMargins(0,0,0,0);
+        tabBarlayout->setContentsMargins(0, 0, 0, 0);
         tabBarlayout->setSpacing(0);
 
         m_tabBar = new DockTabBar(tabBarContainer);
@@ -148,7 +148,7 @@ namespace AzQtComponents
 
         auto container = new QWidget(this);
         auto layout = new QHBoxLayout(container);
-        layout->setContentsMargins(0,0,0,0);
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
 
         m_stackedLayout->addWidget(container);
@@ -166,7 +166,7 @@ namespace AzQtComponents
         m_buttonsContainer = new QFrame(container);
         m_buttonsContainer->setObjectName(QStringLiteral("buttons"));
         m_buttonsLayout = new QHBoxLayout(m_buttonsContainer);
-        m_buttonsLayout->setContentsMargins(0,0,0,0);
+        m_buttonsLayout->setContentsMargins(0, 0, 0, 0);
         m_buttonsLayout->setSpacing(DockBar::ButtonsSpacing);
         layout->addWidget(m_buttonsContainer);
 
@@ -344,18 +344,18 @@ namespace AzQtComponents
     {
         switch (event->type())
         {
-            case QEvent::ParentChange:
-            case QEvent::Show:
-            case QEvent::WindowTitleChange:
-                updateTitle();
-                break;
-            case QEvent::StyleChange:
-                // Reset the TitleBar height when the style changes. It is still too early to do it
-                // in TitleBar::unpolish because the widget doesn't have the new style yet.
-                updateTitleBar();
-                break;
-            default:
-                break;
+        case QEvent::ParentChange:
+        case QEvent::Show:
+        case QEvent::WindowTitleChange:
+            updateTitle();
+            break;
+        case QEvent::StyleChange:
+            // Reset the TitleBar height when the style changes. It is still too early to do it
+            // in TitleBar::unpolish because the widget doesn't have the new style yet.
+            updateTitleBar();
+            break;
+        default:
+            break;
         }
         return QFrame::event(event);
     }
@@ -441,7 +441,7 @@ namespace AzQtComponents
         const int currentIndex = !drawSimple() && m_appearAsTabBar && isTitleBarForDockWidget() ? 0 : 1;
         m_stackedLayout->setCurrentIndex(currentIndex);
     }
-    
+
     void TitleBar::setIsShowingWindowControls(bool show)
     {
         m_isShowingWindowControls = show;
@@ -475,17 +475,17 @@ namespace AzQtComponents
 
         switch (event->type())
         {
-            case QEvent::MouseButtonPress:
-            case QEvent::MouseButtonRelease:
-            case QEvent::MouseButtonDblClick:
-            case QEvent::MouseMove:
-                // Filter our these events, but make sure we ignore them so they get propagated past
-                // the tab bar.
-                event->ignore();
-                return true;
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick:
+        case QEvent::MouseMove:
+            // Filter our these events, but make sure we ignore them so they get propagated past
+            // the tab bar.
+            event->ignore();
+            return true;
 
-            default:
-                break;
+        default:
+            break;
         }
 
         return QFrame::eventFilter(watched, event);
@@ -536,7 +536,8 @@ namespace AzQtComponents
         return true;
     }
 
-    int TitleBar::titleBarHeight(const Style* style, const QStyleOption* option, const QWidget* widget, const Config& config, const TabWidget::Config& tabConfig)
+    int TitleBar::titleBarHeight(
+        const Style* style, const QStyleOption* option, const QWidget* widget, const Config& config, const TabWidget::Config& tabConfig)
     {
         Q_UNUSED(style);
         Q_UNUSED(option);
@@ -545,12 +546,12 @@ namespace AzQtComponents
         {
             switch (titleBar->drawMode())
             {
-                case TitleBarDrawMode::Hidden:
-                    return 0;
-                case TitleBarDrawMode::Simple:
-                    return config.titleBar.simpleHeight;
-                case TitleBarDrawMode::Main:
-                default:
+            case TitleBarDrawMode::Hidden:
+                return 0;
+            case TitleBarDrawMode::Simple:
+                return config.titleBar.simpleHeight;
+            case TitleBarDrawMode::Main:
+            default:
                 {
                     if (titleBar->drawAsTabBar() && titleBar->isTitleBarForDockWidget())
                     {
@@ -617,10 +618,9 @@ namespace AzQtComponents
 
     bool TitleBar::isInFloatingDockWidget() const
     {
-        if (QWidget *win = window())
+        if (QWidget* win = window())
         {
-            return qobject_cast<QDockWidget*>(win)
-                || strcmp(win->metaObject()->className(), "QDockWidgetGroupWindow") == 0;
+            return qobject_cast<QDockWidget*>(win) || strcmp(win->metaObject()->className(), "QDockWidgetGroupWindow") == 0;
         }
 
         return false;
@@ -677,7 +677,7 @@ namespace AzQtComponents
             connect(m_closeMenuAction, &QAction::triggered, this, &TitleBar::handleClose);
         }
 
-        QWidget *topLevelWidget = window();
+        QWidget* topLevelWidget = window();
         if (!topLevelWidget)
         {
             // Defensive, doesn't happen
@@ -759,7 +759,7 @@ namespace AzQtComponents
         }
         else if (canDragWindow())
         {
-            QWidget *topLevel = window();
+            QWidget* topLevel = window();
             auto topLevelWidth = topLevel->width();
             m_dragPos = topLevel->mapFromGlobal(globalPos);
             m_relativeDragPos = (double)m_dragPos.x() / ((double)topLevel->width());
@@ -801,7 +801,7 @@ namespace AzQtComponents
         return nullptr;
     }
 
-    bool TitleBar::isTopResizeArea(const QPoint &globalPos) const
+    bool TitleBar::isTopResizeArea(const QPoint& globalPos) const
     {
         if (window() != parentWidget() && !isInDockWidgetWindowGroup())
         {
@@ -882,7 +882,7 @@ namespace AzQtComponents
 
     bool TitleBar::canResize() const
     {
-        const QWidget *w = window();
+        const QWidget* w = window();
         if (!w)
         {
             return false;
@@ -894,8 +894,7 @@ namespace AzQtComponents
             return false;
         }
 
-        return w && usesCustomTopBorderResizing() &&
-            w->minimumHeight() < w->maximumHeight() && !w->isMaximized();
+        return w && usesCustomTopBorderResizing() && w->minimumHeight() < w->maximumHeight() && !w->isMaximized();
     }
 
     void TitleBar::updateMouseCursor(const QPoint& globalPos)
@@ -906,7 +905,8 @@ namespace AzQtComponents
         }
 
         bool usesResizeCursor = false;
-        switch (cursor().shape()) {
+        switch (cursor().shape())
+        {
         case Qt::SizeVerCursor:
         case Qt::SizeHorCursor:
         case Qt::SizeFDiagCursor:
@@ -947,19 +947,19 @@ namespace AzQtComponents
 
     void TitleBar::resizeWindow(const QPoint& globalPos)
     {
-        QWindow *w = topLevelWindow();
+        QWindow* w = topLevelWindow();
         QRect geo = w->geometry();
 
         // maxGeo has all sides of the rectangle expanded as far as allowed
-        const QRect maxGeo = QRect(QPoint(geo.right() - w->maximumWidth(),
-                                          geo.bottom() - w->maximumHeight()),
-                                   QPoint(geo.left() + w->maximumWidth(),
-                                          geo.top() + w->maximumHeight()));
+        const QRect maxGeo = QRect(
+            QPoint(geo.right() - w->maximumWidth(), geo.bottom() - w->maximumHeight()),
+            QPoint(geo.left() + w->maximumWidth(), geo.top() + w->maximumHeight()));
         // same for minGeo, we just have to take care that the size doesn't become "negative"
-        const QRect minGeo = QRect(QPoint(m_resizingLeft ? geo.right() - w->minimumWidth() : geo.left(),
-                                          m_resizingTop ? geo.bottom() - w->minimumHeight() : geo.top()),
-                                   QPoint(m_resizingRight ? geo.left() + w->minimumWidth() : geo.right(),
-                                          geo.bottom()));
+        const QRect minGeo = QRect(
+            QPoint(
+                m_resizingLeft ? geo.right() - w->minimumWidth() : geo.left(),
+                m_resizingTop ? geo.bottom() - w->minimumHeight() : geo.top()),
+            QPoint(m_resizingRight ? geo.left() + w->minimumWidth() : geo.right(), geo.bottom()));
 
         if (m_resizingTop)
         {
@@ -1097,8 +1097,8 @@ namespace AzQtComponents
         StyledDockWidget* dockWidgetParent = qobject_cast<StyledDockWidget*>(parentWidget());
         QWidget* groupWindowParent = dockWidgetParent ? dockWidgetParent->parentWidget() : nullptr;
 
-        // DockWidgetGroupWindow has issues. It renders the TitleBar when floating (and only when it's floating), but renders everything else over top of it.
-        // In that case, the TitleBar still gets mouse clicks, so if it's under a menu bar, the menu bar doesn't work.
+        // DockWidgetGroupWindow has issues. It renders the TitleBar when floating (and only when it's floating), but renders everything
+        // else over top of it. In that case, the TitleBar still gets mouse clicks, so if it's under a menu bar, the menu bar doesn't work.
         // The following is a workaround
         bool shouldBeLowered = false;
         if (isInDockWidgetWindowGroup() && groupWindowParent)
@@ -1168,7 +1168,7 @@ namespace AzQtComponents
         // Before we do anything else, figure out if any existing buttons were disabled.
         // Only trust items already in the layout.
         QVector<DockBarButton::WindowDecorationButton> disabledButtons = findDisabledButtons(layout);
-        
+
         // Remove the old buttons from our layout.
         const auto oldButtons = container->findChildren<QWidget*>();
         for (auto button : oldButtons)
@@ -1275,4 +1275,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_Titlebar.cpp"
+#endif

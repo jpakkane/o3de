@@ -21,8 +21,8 @@
 #include <QGraphicsOpacityEffect>
 #include <QMenu>
 #include <QMouseEvent>
-#include <QToolButton>
 #include <QStyleOptionTab>
+#include <QToolButton>
 
 // Constant for the width of the close button and its total offset (width + margin spacing)
 static const int g_closeButtonWidth = 19;
@@ -33,7 +33,6 @@ static const QColor g_tabIndicatorUnderlayColor(Qt::black);
 static const qreal g_tabIndicatorUnderlayOpacity = 0.75;
 // Constant for the duration of our tab animations (in milliseconds)
 static const int g_tabAnimationDurationMS = 250;
-
 
 namespace AzQtComponents
 {
@@ -184,15 +183,18 @@ namespace AzQtComponents
     void DockTabBar::tabInserted(int index)
     {
         auto closeButton = new DockBarButton(DockBarButton::CloseButton);
-        connect(closeButton, &DockBarButton::clicked, this, [=] {
-            int widgetIndex = tabAt(closeButton->pos());
-            if (widgetIndex >= 0)
+        connect(
+            closeButton, &DockBarButton::clicked, this,
+            [=]
             {
-                emit tabCloseRequested(widgetIndex);
-            }
-        });
+                int widgetIndex = tabAt(closeButton->pos());
+                if (widgetIndex >= 0)
+                {
+                    emit tabCloseRequested(widgetIndex);
+                }
+            });
 
-        const ButtonPosition closeSide = (ButtonPosition) style()->styleHint(QStyle::SH_TabBar_CloseButtonPosition, 0, this);
+        const ButtonPosition closeSide = (ButtonPosition)style()->styleHint(QStyle::SH_TabBar_CloseButtonPosition, 0, this);
         setTabButton(index, closeSide, closeButton);
     }
 
@@ -221,7 +223,12 @@ namespace AzQtComponents
             // Action to close the specified tab, and leave the text blank since
             // it will be dynamically set using the title of the specified tab
             m_closeTabMenuAction = m_contextMenu->addAction(QString());
-            QObject::connect(m_closeTabMenuAction, &QAction::triggered, this, [this]() { emit closeTab(m_menuActionTabIndex); });
+            QObject::connect(
+                m_closeTabMenuAction, &QAction::triggered, this,
+                [this]()
+                {
+                    emit closeTab(m_menuActionTabIndex);
+                });
 
             // Action to close all of the tabs in our tab widget
             m_closeTabGroupMenuAction = m_contextMenu->addAction(tr("Close Tab Group"));
@@ -233,11 +240,21 @@ namespace AzQtComponents
             // Action to undock the specified tab, and leave the text blank since
             // it will be dynamically set using the title of the specified tab
             m_undockTabMenuAction = m_contextMenu->addAction(QString());
-            QObject::connect(m_undockTabMenuAction, &QAction::triggered, this, [this]() { emit undockTab(m_menuActionTabIndex); });
+            QObject::connect(
+                m_undockTabMenuAction, &QAction::triggered, this,
+                [this]()
+                {
+                    emit undockTab(m_menuActionTabIndex);
+                });
 
             // Action to undock the entire tab widget
             m_undockTabGroupMenuAction = m_contextMenu->addAction(tr("Undock Tab Group"));
-            QObject::connect(m_undockTabGroupMenuAction, &QAction::triggered, this ,[this]() { emit undockTab(-1); });
+            QObject::connect(
+                m_undockTabGroupMenuAction, &QAction::triggered, this,
+                [this]()
+                {
+                    emit undockTab(-1);
+                });
         }
 
         if (index >= 0)
@@ -291,7 +308,8 @@ namespace AzQtComponents
             // The Floating Window structure is fixed, so we should always get the parent. If we don't, bail out.
             if (!parent() || !parent()->parent() || !parent()->parent()->parent())
             {
-                AZ_Warning("DockTabBar", false,
+                AZ_Warning(
+                    "DockTabBar", false,
                     "Could not access the parent floating window to trigger its context menu - invalid floating window structure?");
                 return;
             }
@@ -357,10 +375,12 @@ namespace AzQtComponents
      */
     void DockTabBar::finishDrag()
     {
-        QMouseEvent event(QEvent::MouseButtonRelease, {0.0f, 0.0f}, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+        QMouseEvent event(QEvent::MouseButtonRelease, { 0.0f, 0.0f }, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
         mouseReleaseEvent(&event);
     }
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_DockTabBar.cpp"
+#endif

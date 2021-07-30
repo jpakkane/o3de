@@ -30,6 +30,8 @@ namespace AzQtComponents
             header()->setSectionResizeMode(i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents);
         }
     }
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_AssetFolderListView.cpp"
+#endif

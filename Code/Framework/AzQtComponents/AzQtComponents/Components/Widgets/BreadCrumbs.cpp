@@ -6,19 +6,19 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/BreadCrumbs.h>
 #include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
+#include <AzQtComponents/Components/Widgets/BreadCrumbs.h>
 
-AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option") // 4251: 'QLayoutItem::align': class 'QFlags<Qt::AlignmentFlag>' needs to have dll-interface to be used by clients of class 'QLayoutItem'
+AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option") // 4251: 'QLayoutItem::align': class 'QFlags<Qt::AlignmentFlag>' needs to
+                                                               // have dll-interface to be used by clients of class 'QLayoutItem'
 #include <QHBoxLayout>
-#include <QToolButton>
-#include <QToolBar>
 #include <QLabel>
-#include <QHBoxLayout>
-#include <QSettings>
 #include <QMenu>
 #include <QResizeEvent>
+#include <QSettings>
+#include <QToolBar>
+#include <QToolButton>
 AZ_POP_DISABLE_WARNING
 
 namespace AzQtComponents
@@ -232,13 +232,16 @@ namespace AzQtComponents
         QString plainTextPath = "";
         m_menuButton->hide();
 
-        auto formatLink = [this](const QString& fullPath, const QString& shortPath) -> QString {
+        auto formatLink = [this](const QString& fullPath, const QString& shortPath) -> QString
+        {
             return QString("<a href=\"%1\" style=\"color: %2\">%3</a>").arg(fullPath, m_config.linkColor, shortPath);
         };
 
         const QString nonBreakingSpace = QStringLiteral("&nbsp;");
-        auto prependSeparators = [&]() {
-            htmlString.prepend(QStringLiteral("%1%1<img src=\":/Breadcrumb/img/UI20/Breadcrumb/Next_level_arrow.svg\">%1%1").arg(nonBreakingSpace));
+        auto prependSeparators = [&]()
+        {
+            htmlString.prepend(
+                QStringLiteral("%1%1<img src=\":/Breadcrumb/img/UI20/Breadcrumb/Next_level_arrow.svg\">%1%1").arg(nonBreakingSpace));
         };
 
         // last section is not clickable
@@ -365,9 +368,12 @@ namespace AzQtComponents
         QMenu hiddenPaths;
         for (int i = m_truncatedPaths.size() - 1; i >= 0; i--)
         {
-            hiddenPaths.addAction(m_truncatedPaths.at(i), [this, i]() {
-                onLinkActivated(buildPathFromList(m_truncatedPaths, i + 1));
-            });
+            hiddenPaths.addAction(
+                m_truncatedPaths.at(i),
+                [this, i]()
+                {
+                    onLinkActivated(buildPathFromList(m_truncatedPaths, i + 1));
+                });
         }
 
         const auto position = m_menuButton->mapToGlobal(m_menuButton->geometry().bottomLeft());
@@ -375,4 +381,6 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_BreadCrumbs.cpp"
+#endif

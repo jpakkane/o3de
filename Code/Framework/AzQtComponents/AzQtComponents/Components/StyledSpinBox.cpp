@@ -25,13 +25,14 @@ namespace AzQtComponents
     const int decimalPrecisonDefault = 7;
     const int decimalDisplayPrecisionDefault = 3;
 
-    class FocusInEventFilterPrivate
-        : public QObject
+    class FocusInEventFilterPrivate : public QObject
     {
     public:
         FocusInEventFilterPrivate(StyledDoubleSpinBox* spinBox)
             : QObject(spinBox)
-            , m_spinBox(spinBox) {}
+            , m_spinBox(spinBox)
+        {
+        }
 
     protected:
         bool eventFilter(QObject* obj, QEvent* event) override
@@ -57,12 +58,12 @@ namespace AzQtComponents
 
             return QObject::eventFilter(obj, event);
         }
+
     private:
         StyledDoubleSpinBox* m_spinBox;
     };
 
-    class ClickEventFilterPrivate
-        : public QObject
+    class ClickEventFilterPrivate : public QObject
     {
     public:
         explicit ClickEventFilterPrivate(StyledDoubleSpinBox* spinBox, QSlider* slider)
@@ -71,13 +72,26 @@ namespace AzQtComponents
         {
             if (slider)
             {
-                connect(slider, &QSlider::sliderPressed, this, [this] { m_dragging = true; });
-                connect(slider, &QSlider::sliderReleased, this, [this] { m_dragging = false; });
+                connect(
+                    slider, &QSlider::sliderPressed, this,
+                    [this]
+                    {
+                        m_dragging = true;
+                    });
+                connect(
+                    slider, &QSlider::sliderReleased, this,
+                    [this]
+                    {
+                        m_dragging = false;
+                    });
             }
         }
-        ~ClickEventFilterPrivate() {}
+        ~ClickEventFilterPrivate()
+        {
+        }
     signals:
         void clickOnApplication(const QPoint& pos);
+
     protected:
         bool eventFilter(QObject* obj, QEvent* event)
         {
@@ -88,6 +102,7 @@ namespace AzQtComponents
 
             return QObject::eventFilter(obj, event);
         }
+
     private:
         StyledDoubleSpinBox* m_spinBox;
         bool m_dragging = false;
@@ -113,7 +128,9 @@ namespace AzQtComponents
 
         // Our tooltip will be the full decimal value, so keep it updated
         // whenever our value changes
-        QObject::connect(this, static_cast<void(StyledDoubleSpinBox::*)(double)>(&StyledDoubleSpinBox::valueChanged), this, &StyledDoubleSpinBox::UpdateToolTip);
+        QObject::connect(
+            this, static_cast<void (StyledDoubleSpinBox::*)(double)>(&StyledDoubleSpinBox::valueChanged), this,
+            &StyledDoubleSpinBox::UpdateToolTip);
         UpdateToolTip(value());
     }
 
@@ -380,7 +397,8 @@ namespace AzQtComponents
         {
             int offset = sliderDefaultWidth - width();
             m_slider->setStyleSheet("background: transparent; border-image: url(:/stylesheet/img/styledspinbox-bg-right.png);");
-            m_slider->setGeometry(spinBoxTopLeftGlobal.x() - offset, spinBoxTopLeftGlobal.y() + height(), sliderDefaultWidth, sliderDefaultHeight);
+            m_slider->setGeometry(
+                spinBoxTopLeftGlobal.x() - offset, spinBoxTopLeftGlobal.y() + height(), sliderDefaultWidth, sliderDefaultHeight);
         }
         else
         {
@@ -399,11 +417,11 @@ namespace AzQtComponents
         m_slider = new StyledSliderPrivate(this);
         m_slider->setWindowFlags(Qt::WindowFlags(Qt::Window) | Qt::WindowFlags(Qt::FramelessWindowHint));
 
-        QObject::connect(this, static_cast<void(StyledDoubleSpinBox::*)(double)>(&StyledDoubleSpinBox::valueChanged),
-            this, &StyledDoubleSpinBox::updateSliderValue);
+        QObject::connect(
+            this, static_cast<void (StyledDoubleSpinBox::*)(double)>(&StyledDoubleSpinBox::valueChanged), this,
+            &StyledDoubleSpinBox::updateSliderValue);
 
-        QObject::connect(m_slider, &QSlider::valueChanged,
-            this, &StyledDoubleSpinBox::updateValueFromSlider);
+        QObject::connect(m_slider, &QSlider::valueChanged, this, &StyledDoubleSpinBox::updateValueFromSlider);
 
         // These event filters will be automatically removed when our spin box is deleted
         // since they are parented to it
@@ -572,9 +590,12 @@ namespace AzQtComponents
 
         // Added a valueChanged signal with an int parameter to mirror the behavior
         // of the QSpinBox
-        QObject::connect(this, static_cast<void(StyledDoubleSpinBox::*)(double)>(&StyledDoubleSpinBox::valueChanged), this, [this](double val) {
-            emit valueChanged((int)val);
-        });
+        QObject::connect(
+            this, static_cast<void (StyledDoubleSpinBox::*)(double)>(&StyledDoubleSpinBox::valueChanged), this,
+            [this](double val)
+            {
+                emit valueChanged((int)val);
+            });
     }
 
     int StyledSpinBox::maximum() const
@@ -633,4 +654,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyledSpinBox.cpp"
+#endif

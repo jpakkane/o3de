@@ -8,20 +8,20 @@
 
 #include <AzCore/Casting/numeric_cast.h>
 
-#include <AzQtComponents/Components/Widgets/Card.h>
-#include <AzQtComponents/Components/Widgets/CardHeader.h>
-#include <AzQtComponents/Components/Widgets/CardNotification.h>
 #include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleHelpers.h>
 #include <AzQtComponents/Components/TitleBarOverdrawHandler.h> // for the QMargins metatype declarations
+#include <AzQtComponents/Components/Widgets/Card.h>
+#include <AzQtComponents/Components/Widgets/CardHeader.h>
+#include <AzQtComponents/Components/Widgets/CardNotification.h>
 #include <QDesktopWidget>
 #include <QMenu>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QStyle>
 #include <QPoint>
+#include <QPushButton>
 #include <QSettings>
+#include <QStyle>
+#include <QVBoxLayout>
 
 namespace AzQtComponents
 {
@@ -95,7 +95,6 @@ namespace AzQtComponents
         // add a placeholder, so that the ordering of widgets in Cards works
         m_contentWidget = new QWidget(this);
         m_mainLayout->addWidget(m_contentWidget);
-
 
         m_separatorContainer = new QFrame(this);
         m_separatorContainer->setObjectName("SeparatorContainer");
@@ -182,7 +181,6 @@ namespace AzQtComponents
         return m_notifications.size();
     }
 
-
     void Card::setExpanded(bool expand)
     {
         // expandStateChanged triggers an expensive style repolish, make sure we short circuit if this is a no-op
@@ -241,7 +239,6 @@ namespace AzQtComponents
     {
         return m_dropTarget;
     }
-
 
     void Card::setSecondaryContentExpanded(bool expand)
     {
@@ -348,7 +345,7 @@ namespace AzQtComponents
         config.headerIconSizeInPixels = CardHeader::defaultIconSize();
         config.rootLayoutSpacing = 0;
         config.warningIcon = QStringLiteral(":/Cards/img/UI20/Cards/warning.svg");
-        config.warningIconSize = {24, 24};
+        config.warningIconSize = { 24, 24 };
         config.disabledIconAlpha = 0.25;
 
         return config;
@@ -393,7 +390,7 @@ namespace AzQtComponents
     {
         (void)style;
         (void)config;
-        
+
         bool unpolished = false;
 
         if (auto card = qobject_cast<Card*>(widget))
@@ -405,7 +402,8 @@ namespace AzQtComponents
         return unpolished;
     }
 
-    QPixmap Card::generatedIconPixmap(QIcon::Mode iconMode, const QPixmap& pixmap, const QStyleOption* option, const QWidget* widget, const Config& config)
+    QPixmap Card::generatedIconPixmap(
+        QIcon::Mode iconMode, const QPixmap& pixmap, const QStyleOption* option, const QWidget* widget, const Config& config)
     {
         const auto* iconWidget = widget ? widget : qobject_cast<QWidget*>(option->styleObject);
         if (CardHeader::isCardHeaderMenuButton(iconWidget))
@@ -456,4 +454,6 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_Card.cpp"
+#endif

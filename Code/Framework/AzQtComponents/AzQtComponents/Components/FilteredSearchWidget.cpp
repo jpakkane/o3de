@@ -6,41 +6,43 @@
  *
  */
 
-#include <AzQtComponents/Components/FilteredSearchWidget.h>
 #include <AzQtComponents/Components/ConfigHelpers.h>
+#include <AzQtComponents/Components/FilteredSearchWidget.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
 #include <AzQtComponents/Components/Widgets/LineEdit.h>
 #include <AzQtComponents/Utilities/ScreenUtilities.h>
 
+#ifdef MESON_BUILD
+#include <ui_FilteredSearchWidget.h>
+#else
 #include <AzQtComponents/Components/ui_FilteredSearchWidget.h>
-
+#endif
 #include <AzQtComponents/Components/FlowLayout.h>
 
 #include <AzFramework/StringFunc/StringFunc.h>
 
 #include <QApplication>
-#include <QMenu>
-#include <QLabel>
-#include <QVBoxLayout>
+#include <QDesktopWidget>
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QMenu>
-#include <QTreeView>
-#include <QSortFilterProxyModel>
-#include <QStandardItemModel>
-#include <QStandardItem>
+#include <QPushButton>
 #include <QScopedValueRollback>
 #include <QScreen>
-#include <QDesktopWidget>
-#include <QTimer>
 #include <QSettings>
-#include <QPushButton>
+#include <QSortFilterProxyModel>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QTimer>
 #include <QToolButton>
-#include <QLineEdit>
+#include <QTreeView>
+#include <QVBoxLayout>
 
-#include <QStyledItemDelegate>
 #include <QPainter>
 #include <QStyle>
+#include <QStyledItemDelegate>
 
 #include <QTextDocument>
 
@@ -54,7 +56,7 @@ namespace AzQtComponents
     static const QString g_displayNameKey = QStringLiteral("displayName");
     static const QString g_enabledKey = QStringLiteral("enabled");
 
-    static const int FilterWindowWidthPadding = 100;// Amount to add to filter window to account for initial spacing and scrollbar.
+    static const int FilterWindowWidthPadding = 100; // Amount to add to filter window to account for initial spacing and scrollbar.
 
     const char* FilteredSearchWidget::s_filterDataProperty = "filterData";
     const char* const s_filterSearchWidgetName = "filteredSearchWidget";
@@ -65,7 +67,8 @@ namespace AzQtComponents
     const QString BackgroundColor{ "#565A5B" };
     const QString SeparatorColor{ "#606060" };
 
-    FilterCriteriaButton::FilterCriteriaButton(const QString& labelText, QWidget* parent, FilterCriteriaButton::ExtraButtonType type, const QString& extraIconFileName)
+    FilterCriteriaButton::FilterCriteriaButton(
+        const QString& labelText, QWidget* parent, FilterCriteriaButton::ExtraButtonType type, const QString& extraIconFileName)
         : QFrame(parent)
     {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -94,7 +97,12 @@ namespace AzQtComponents
             extraButton->setFlat(true);
             extraButton->setProperty("iconButton", "true");
             extraButton->setMouseTracking(true);
-            connect(extraButton, &QPushButton::clicked, this, [this, type]() { emit ExtraButtonClicked(type); });
+            connect(
+                extraButton, &QPushButton::clicked, this,
+                [this, type]()
+                {
+                    emit ExtraButtonClicked(type);
+                });
             m_frameLayout->addWidget(extraButton);
         }
 
@@ -131,7 +139,10 @@ namespace AzQtComponents
     public:
         using QTreeView::QTreeView;
 
-        int fetchRowHeight(const QModelIndex &index) const { return rowHeight(index); }
+        int fetchRowHeight(const QModelIndex& index) const
+        {
+            return rowHeight(index);
+        }
     };
 
     SearchTypeSelector::SearchTypeSelector(QWidget* parent /* = nullptr */)
@@ -158,11 +169,11 @@ namespace AzQtComponents
         verticalLayout->setObjectName(QStringLiteral("vertLayout"));
         verticalLayout->setContentsMargins(hmargin, vmargin, hmargin, vmargin);
 
-        //make text search box
+        // make text search box
         m_searchLayout = new QVBoxLayout();
         m_searchLayout->setObjectName(s_searchLayout);
         m_searchLayout->setContentsMargins(m_searchLayoutMargin, m_searchLayoutMargin, m_searchLayoutMargin, m_searchLayoutMargin);
-        
+
         QLineEdit* textSearch = new QLineEdit(this);
         m_searchField = textSearch;
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -184,7 +195,7 @@ namespace AzQtComponents
         QVBoxLayout* itemLayout = new QVBoxLayout();
         itemLayout->setContentsMargins(0, 0, 0, 0);
 
-        //add in item tree
+        // add in item tree
         m_tree = new SearchTypeSelectorTreeView(this);
         m_tree->setAlternatingRowColors(false);
         m_tree->setRootIsDecorated(true);
@@ -202,23 +213,27 @@ namespace AzQtComponents
         m_filterModel->setSourceModel(m_model);
 
         // make sure all entries enter the view expanded
-        connect(m_filterModel, &QAbstractItemModel::rowsInserted, this, [this]()
-        {
-            m_tree->expandAll();
-        });
+        connect(
+            m_filterModel, &QAbstractItemModel::rowsInserted, this,
+            [this]()
+            {
+                m_tree->expandAll();
+            });
         m_tree->setModel(m_filterModel);
         m_tree->setHeaderHidden(true);
 
-        connect(m_model, &QStandardItemModel::itemChanged, this, [this](QStandardItem* item)
-        {
-            // Don't emit itemChanged while Setup is running
-            if (!m_settingUp)
+        connect(
+            m_model, &QStandardItemModel::itemChanged, this,
+            [this](QStandardItem* item)
             {
-                int index = item->data().toInt();
-                bool enabled = item->checkState() == Qt::Checked;
-                emit TypeToggled(index, enabled);
-            }
-        });
+                // Don't emit itemChanged while Setup is running
+                if (!m_settingUp)
+                {
+                    int index = item->data().toInt();
+                    bool enabled = item->checkState() == Qt::Checked;
+                    emit TypeToggled(index, enabled);
+                }
+            });
         verticalLayout->addLayout(m_searchLayout);
         verticalLayout->addLayout(itemLayout);
     }
@@ -264,7 +279,6 @@ namespace AzQtComponents
 
         QVector<QString> categoriesInOrder; // categories in originally specified order
         QMap<QString, QList<QStandardItem*>> categoryToEntryItems; // category name to sub-items that will be added
-        
 
         const int numItems = unfilteredData.length();
         for (int unfilteredDataIndex = 0; unfilteredDataIndex < numItems; ++unfilteredDataIndex)
@@ -287,7 +301,7 @@ namespace AzQtComponents
             int textWidth = fontMetrics().horizontalAdvance(filter.displayName);
             if (textWidth > m_estimatedTableWidth)
             {
-                m_estimatedTableWidth = textWidth; 
+                m_estimatedTableWidth = textWidth;
             }
         }
 
@@ -400,7 +414,7 @@ namespace AzQtComponents
 
         // Decide whether the menu should go up or down from current point.
         // Compare to the mouse position with the remaining height left to store it on either side
-        
+
         int newMaxHeight = screenGeometry.bottom() - globalYAtBottomOfParent;
         int newHeight = idealHeight;
 
@@ -509,7 +523,7 @@ namespace AzQtComponents
     {
         return m_searchLayoutMargin;
     }
-    
+
     void SearchTypeSelector::setSearchLayoutMargin(int newMargin)
     {
         m_searchLayoutMargin = newMargin;
@@ -531,7 +545,8 @@ namespace AzQtComponents
     }
 
     SearchTypeSelectorFilterModel::SearchTypeSelectorFilterModel(SearchTypeSelector* searchTypeSelector)
-        : QSortFilterProxyModel(searchTypeSelector), m_searchTypeSelector(searchTypeSelector)
+        : QSortFilterProxyModel(searchTypeSelector)
+        , m_searchTypeSelector(searchTypeSelector)
     {
         // use queued connections so that the normal sort/filter operations get a chance to finish the index remapping before we act
         connect(this, &QAbstractItemModel::rowsInserted, this, &SearchTypeSelectorFilterModel::onRowCountChanged, Qt::QueuedConnection);
@@ -544,7 +559,6 @@ namespace AzQtComponents
         invalidateFilter();
     }
 
-
     void SearchTypeSelectorFilterModel::onRowCountChanged()
     {
         // see if we need to hide or show the "no results" message item
@@ -552,8 +566,9 @@ namespace AzQtComponents
 
         // check if we're down to the (never filtered) fixed items, and should show the "no results" message,
         // or if we were already showing that message, check if we have more than the fixed items plus the message itself
-        const bool hasResultsChanged = (m_showingNoResultsMessage ? numLeafNodes > m_searchTypeSelector->GetNumFixedItems() + 1
-                                                                  : numLeafNodes <= m_searchTypeSelector->GetNumFixedItems());
+        const bool hasResultsChanged =
+            (m_showingNoResultsMessage ? numLeafNodes > m_searchTypeSelector->GetNumFixedItems() + 1
+                                       : numLeafNodes <= m_searchTypeSelector->GetNumFixedItems());
 
         if (hasResultsChanged)
         {
@@ -573,7 +588,7 @@ namespace AzQtComponents
             return m_showingNoResultsMessage;
         }
 
-        const bool filteredByBase = ! QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
+        const bool filteredByBase = !QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 
         // allow searchTypeSelector to make the final decision whether to filter out this item
         return !(m_searchTypeSelector->filterItemOut(m_searchTypeSelector->m_model->index(source_row, 0, source_parent), filteredByBase));
@@ -637,23 +652,28 @@ namespace AzQtComponents
         connect(m_ui->filteredLayout, &QWidget::customContextMenuRequested, this, &FilteredSearchWidget::OnClearFilterContextMenu);
         connect(m_ui->textSearch, &QLineEdit::textChanged, this, &FilteredSearchWidget::OnTextChanged);
         // QLineEdit's clearButton only triggers a textEdited, not a textChanged, so we special case that
-        connect(m_ui->textSearch, &QLineEdit::textEdited, this, [this](const QString& newText) {
-            if (newText.isEmpty())
+        connect(
+            m_ui->textSearch, &QLineEdit::textEdited, this,
+            [this](const QString& newText)
             {
-                OnTextChanged(newText);
-            }
-        });
+                if (newText.isEmpty())
+                {
+                    OnTextChanged(newText);
+                }
+            });
         connect(m_ui->textSearch, &QLineEdit::returnPressed, this, &FilteredSearchWidget::UpdateTextFilter);
         connect(this, &FilteredSearchWidget::textFilterFillsWidthChanged, this, &FilteredSearchWidget::UpdateTextFilterWidth);
-        connect(this, &FilteredSearchWidget::TypeFilterChanged, this, [this](const SearchTypeFilterList& activeTypeFilters)
-        {
-            if (!m_displayEnabledFilters)
+        connect(
+            this, &FilteredSearchWidget::TypeFilterChanged, this,
+            [this](const SearchTypeFilterList& activeTypeFilters)
             {
-                return;
-            }
+                if (!m_displayEnabledFilters)
+                {
+                    return;
+                }
 
-            m_ui->filteredParent->setVisible(!activeTypeFilters.isEmpty());
-        });
+                m_ui->filteredParent->setVisible(!activeTypeFilters.isEmpty());
+            });
         connect(m_ui->textSearch, &QWidget::customContextMenuRequested, this, &FilteredSearchWidget::OnSearchContextMenu);
 
         if (!willUseOwnSelector)
@@ -687,7 +707,12 @@ namespace AzQtComponents
         m_ui->assetTypeSelector->setMenu(m_selector);
         SetupPaintDelegates();
 
-        connect(m_selector, &SearchTypeSelector::aboutToShow, this, [this]() {m_selector->Setup(m_typeFilters); });
+        connect(
+            m_selector, &SearchTypeSelector::aboutToShow, this,
+            [this]()
+            {
+                m_selector->Setup(m_typeFilters);
+            });
         connect(m_selector, &SearchTypeSelector::TypeToggled, this, &FilteredSearchWidget::SetFilterStateByIndex);
     }
 
@@ -706,7 +731,7 @@ namespace AzQtComponents
         }
     }
 
-    void FilteredSearchWidget::AddTypeFilter(const SearchTypeFilter &typeFilter)
+    void FilteredSearchWidget::AddTypeFilter(const SearchTypeFilter& typeFilter)
     {
         if (!typeFilter.displayName.isEmpty())
         {
@@ -784,7 +809,7 @@ namespace AzQtComponents
         }
     }
 
-    void  FilteredSearchWidget::SetupPaintDelegates()
+    void FilteredSearchWidget::SetupPaintDelegates()
     {
         m_delegate = new FilteredSearchItemDelegate(m_selector->GetTree());
         m_selector->GetTree()->setItemDelegate(m_delegate);
@@ -851,24 +876,31 @@ namespace AzQtComponents
         if (enabled && buttonIt == m_typeButtons.end())
         {
             FilterCriteriaButton* button = createCriteriaButton(filter, index);
-            connect(button, &FilterCriteriaButton::RequestClose, this, [this, index]() { SetFilterStateByIndex(index, false); });
-            connect(button, &FilterCriteriaButton::ExtraButtonClicked, this, [this, index](FilterCriteriaButton::ExtraButtonType type)
-            {
-                switch (type)
+            connect(
+                button, &FilterCriteriaButton::RequestClose, this,
+                [this, index]()
                 {
-                case FilterCriteriaButton::ExtraButtonType::None:
-                    break;
-                case FilterCriteriaButton::ExtraButtonType::Locked:
-                    //TODO
-                    break;
-                case FilterCriteriaButton::ExtraButtonType::Unlocked:
-                    //TODO
-                    break;
-                case FilterCriteriaButton::ExtraButtonType::Visible:
-                    //TODO
-                    break;
-                }
-            });
+                    SetFilterStateByIndex(index, false);
+                });
+            connect(
+                button, &FilterCriteriaButton::ExtraButtonClicked, this,
+                [this, index](FilterCriteriaButton::ExtraButtonType type)
+                {
+                    switch (type)
+                    {
+                    case FilterCriteriaButton::ExtraButtonType::None:
+                        break;
+                    case FilterCriteriaButton::ExtraButtonType::Locked:
+                        // TODO
+                        break;
+                    case FilterCriteriaButton::ExtraButtonType::Unlocked:
+                        // TODO
+                        break;
+                    case FilterCriteriaButton::ExtraButtonType::Visible:
+                        // TODO
+                        break;
+                    }
+                });
             m_flowLayout->addWidget(button);
             m_typeButtons[index] = button;
         }
@@ -1042,7 +1074,7 @@ namespace AzQtComponents
         menu->exec(m_ui->textSearch->mapToGlobal(pos));
         delete menu;
     }
-    
+
     void FilteredSearchWidget::OnClearFilterContextMenu(const QPoint& pos)
     {
         QMenu contextMenu(this);
@@ -1122,7 +1154,8 @@ namespace AzQtComponents
         return true;
     }
 
-    FilteredSearchItemDelegate::FilteredSearchItemDelegate(QWidget* parent) : QStyledItemDelegate(parent)
+    FilteredSearchItemDelegate::FilteredSearchItemDelegate(QWidget* parent)
+        : QStyledItemDelegate(parent)
     {
     }
 
@@ -1142,8 +1175,7 @@ namespace AzQtComponents
         textDoc.drawContents(painter, QRectF(0, textDocDrawYOffset, textRect.width(), textRect.height() + textDocDrawYOffset));
     }
 
-    void FilteredSearchItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
-        const QModelIndex& index) const
+    void FilteredSearchItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
     {
         bool isGlobalOption = false;
         painter->save();
@@ -1176,7 +1208,8 @@ namespace AzQtComponents
         }
         else
         {
-            if (m_selector->GetFilterString().length() > 0 && !isGlobalOption && opt.features & QStyleOptionViewItem::ViewItemFeature::HasCheckIndicator)
+            if (m_selector->GetFilterString().length() > 0 && !isGlobalOption &&
+                opt.features & QStyleOptionViewItem::ViewItemFeature::HasCheckIndicator)
             {
                 // Create rich text menu text to show filterstring
                 QString label{ opt.text };
@@ -1194,9 +1227,10 @@ namespace AzQtComponents
                         // Insert background-color terminator at appropriate place to return to normal text.
                         label.insert(highlightTextIndex + m_selector->GetFilterString().length(), "</span>");
                         // Insert background-color command at appropriate place to highlight filter term.
-                        label.insert(highlightTextIndex, "<span style=\"background-color: " + FilteredSearchWidget::GetBackgroundColor() + "\">");
+                        label.insert(
+                            highlightTextIndex, "<span style=\"background-color: " + FilteredSearchWidget::GetBackgroundColor() + "\">");
                     }
-                } while (highlightTextIndex > 0);// Repeat in case there are multiple occurrences.
+                } while (highlightTextIndex > 0); // Repeat in case there are multiple occurrences.
                 PaintRichText(painter, opt, label);
             }
             else
@@ -1217,7 +1251,7 @@ namespace AzQtComponents
         QStyleOptionViewItem opt = option;
         initStyleOption(&opt, index);
 
-        //correct the vertical space for the separator
+        // correct the vertical space for the separator
         if (opt.text.contains("-------"))
         {
             return QSize(0, 6);
@@ -1226,4 +1260,6 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_FilteredSearchWidget.cpp"
+#endif

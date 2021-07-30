@@ -6,20 +6,19 @@
  *
  */
 
+#include <AzCore/Casting/numeric_cast.h>
+#include <AzCore/Math/MathUtils.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorController.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorValidator.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/Palette.h> // needed for Q_DECLARE_METATYPE(AZ::Color);
 #include <AzQtComponents/Utilities/ColorUtilities.h>
 #include <AzQtComponents/Utilities/Conversions.h>
-#include <AzCore/Math/MathUtils.h>
-#include <AzCore/Casting/numeric_cast.h>
-#include <QSignalBlocker>
 #include <QScopedValueRollback>
+#include <QSignalBlocker>
 #include <QVector>
 
 namespace AzQtComponents
 {
-
     namespace Internal
     {
         // The internal ColorState class stores and calculates everything in doubles, for the highest accuracy
@@ -37,10 +36,11 @@ namespace AzQtComponents
 
             ColorState& operator=(const ColorState&) = default;
 
-
             AZ::Color rgb() const
             {
-                return AZ::Color(aznumeric_cast<float>(m_red), aznumeric_cast<float>(m_green), aznumeric_cast<float>(m_blue), aznumeric_cast<float>(m_alpha));
+                return AZ::Color(
+                    aznumeric_cast<float>(m_red), aznumeric_cast<float>(m_green), aznumeric_cast<float>(m_blue),
+                    aznumeric_cast<float>(m_alpha));
             }
 
             double red() const
@@ -189,7 +189,8 @@ namespace AzQtComponents
         private:
             void propagateRgb()
             {
-                // See https://en.wikipedia.org/wiki/HSL_and_HSV#General_approach through https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+                // See https://en.wikipedia.org/wiki/HSL_and_HSV#General_approach through
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
                 const double r = AZ::GetClamp(m_red, 0.0, 1.0);
                 const double g = AZ::GetClamp(m_green, 0.0, 1.0);
                 const double b = AZ::GetClamp(m_blue, 0.0, 1.0);
@@ -309,7 +310,6 @@ namespace AzQtComponents
                 double C = (1.0 - std::abs(2.0 * L - 1.0)) * m_hsl.saturation;
                 double m = L - (0.5 * C);
                 propagateToRgb(C, m);
-
 
                 // See http://home.kpn.nl/vanadovv/color/ColorMath.html#hdir (function HSV_HSL)
                 double lightness = 2.0 * m_hsl.lightness;
@@ -452,7 +452,6 @@ namespace AzQtComponents
             state.setHsv(h, s, v);
             return state.rgb();
         }
-
 
         void ColorController::setValidator(ColorValidator* validator)
         {
@@ -742,4 +741,6 @@ namespace AzQtComponents
     } // namespace Internal
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/ColorPicker/moc_ColorController.cpp"
+#endif

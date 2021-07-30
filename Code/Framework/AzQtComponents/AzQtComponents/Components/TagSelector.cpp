@@ -9,9 +9,8 @@
 #include <AzQtComponents/Components/TagSelector.h>
 #include <QComboBox>
 #include <QLineEdit>
-#include <QVBoxLayout>
 #include <QMouseEvent>
-
+#include <QVBoxLayout>
 
 namespace AzQtComponents
 {
@@ -24,11 +23,10 @@ namespace AzQtComponents
         // Create the close button on the right side.
         setLayoutDirection(Qt::RightToLeft);
         setIcon(QIcon(":/stylesheet/img/titlebarmenu/close.png"));
-        
+
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         connect(this, &QPushButton::clicked, this, &TagWidget::OnClicked);
     }
-
 
     void TagWidget::OnClicked()
     {
@@ -38,13 +36,11 @@ namespace AzQtComponents
         }
     }
 
-
     bool TagWidget::IsOverCloseButton(int localX, int localY)
     {
         Q_UNUSED(localY);
         return (localX > width() - iconSize().width() * 1.5) && (localX < width());
     }
-
 
     void TagWidget::mouseMoveEvent(QMouseEvent* event)
     {
@@ -65,14 +61,12 @@ namespace AzQtComponents
         m_width = 250;
     }
 
-
     void TagWidgetContainer::SetWrapWidth(int width)
     {
         m_width = width;
         Reinit(m_tags);
     }
 
-    
     void TagWidgetContainer::Reinit(const QVector<QString>& tags)
     {
         m_tags = tags;
@@ -128,38 +122,38 @@ namespace AzQtComponents
             hLayout->addWidget(tagWidget);
 
             // Connect the clicked event of the close button of the tag widget to the remove tag function in the container.
-            connect(tagWidget, &TagWidget::DeleteClicked, this, [this, tagWidget]{ RemoveTag(tagWidget->text()); });
+            connect(
+                tagWidget, &TagWidget::DeleteClicked, this,
+                [this, tagWidget]
+                {
+                    RemoveTag(tagWidget->text());
+                });
         }
 
         m_widget->setLayout(vLayout);
         m_layout->addWidget(m_widget);
     }
 
-
     int TagWidgetContainer::GetNumTags() const
     {
         return m_tags.count();
     }
-
 
     const QString& TagWidgetContainer::GetTag(int index) const
     {
         return m_tags[index];
     }
 
-
     const QVector<QString>& TagWidgetContainer::GetTags() const
     {
         return m_tags;
     }
-
 
     bool TagWidgetContainer::Contains(const QString& tag) const
     {
         return m_tags.contains(tag);
     }
 
-    
     void TagWidgetContainer::AddTag(const QString& tag)
     {
         // Is the tag already present in our container? If so, return directly to avoid duplicates.
@@ -172,7 +166,6 @@ namespace AzQtComponents
         Reinit(m_tags);
         emit TagsChanged();
     }
-
 
     void TagWidgetContainer::AddTags(const QVector<QString>& selectedTags)
     {
@@ -196,7 +189,6 @@ namespace AzQtComponents
         }
     }
 
-    
     void TagWidgetContainer::RemoveTag(const QString& tag)
     {
         m_tags.removeAll(tag);
@@ -205,20 +197,18 @@ namespace AzQtComponents
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     TagSelector::TagSelector(QWidget* parent)
         : QWidget(parent)
     {
         Init();
     }
 
-
     TagSelector::TagSelector(const QVector<QString>& availableTags, QWidget* parent)
         : TagSelector(parent)
     {
         Reinit(availableTags);
     }
-
 
     void TagSelector::Init()
     {
@@ -237,16 +227,20 @@ namespace AzQtComponents
         layout->addWidget(m_combo);
 
         connect(m_combo, SIGNAL(activated(int)), this, SLOT(OnComboActivated(int)));
-        connect(m_tagWidgets, &TagWidgetContainer::TagsChanged, this, [this]{ Reinit(); emit TagsChanged(); });
+        connect(
+            m_tagWidgets, &TagWidgetContainer::TagsChanged, this,
+            [this]
+            {
+                Reinit();
+                emit TagsChanged();
+            });
     }
-
 
     void TagSelector::Reinit(const QVector<QString>& availableTags)
     {
         m_availableTags = availableTags;
         Reinit();
     }
-
 
     void TagSelector::Reinit()
     {
@@ -267,12 +261,10 @@ namespace AzQtComponents
         m_combo->blockSignals(false);
     }
 
-
     bool TagSelector::IsTagSelected(const QString& tag) const
     {
         return m_tagWidgets->Contains(tag);
     }
-
 
     void TagSelector::SelectTag(const QString& tag)
     {
@@ -285,7 +277,6 @@ namespace AzQtComponents
         // Add a tag widget to the container. The tag widgets represent the currently selected tags.
         m_tagWidgets->AddTag(tag);
     }
-
 
     void TagSelector::SelectTags(const QVector<QString>& selectedTags)
     {
@@ -308,7 +299,6 @@ namespace AzQtComponents
 
         emit TagsChanged();
     }
-
 
     // Called when pressing enter in the combo box.
     void TagSelector::OnComboActivated(int index)
@@ -341,11 +331,12 @@ namespace AzQtComponents
         m_combo->setCurrentText("");
     }
 
-
     void TagSelector::GetSelectedTagStrings(QVector<QString>& outTags) const
     {
         outTags = m_tagWidgets->GetTags();
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_TagSelector.cpp"
+#endif

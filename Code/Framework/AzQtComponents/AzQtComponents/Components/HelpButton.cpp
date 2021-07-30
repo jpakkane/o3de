@@ -22,4 +22,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_HelpButton.cpp"
+#endif

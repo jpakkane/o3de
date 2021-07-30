@@ -6,15 +6,14 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/ColorPicker/ColorWarning.h>
 #include <AzQtComponents/Components/Style.h>
+#include <AzQtComponents/Components/Widgets/ColorPicker/ColorWarning.h>
 
 #include <QHBoxLayout>
 #include <QLabel>
 
 namespace AzQtComponents
 {
-
     namespace
     {
         const int LINE_HEIGHT = 16;
@@ -61,10 +60,12 @@ namespace AzQtComponents
         switch (m_mode)
         {
         case Mode::Warning:
-            m_iconLabel->setPixmap(Style::cachedPixmap(QStringLiteral(":/Cards/img/UI20/Cards/warning.png")).scaledToHeight(LINE_HEIGHT, Qt::SmoothTransformation));
+            m_iconLabel->setPixmap(Style::cachedPixmap(QStringLiteral(":/Cards/img/UI20/Cards/warning.png"))
+                                       .scaledToHeight(LINE_HEIGHT, Qt::SmoothTransformation));
             break;
         case Mode::Error:
-            m_iconLabel->setPixmap(Style::cachedPixmap(QStringLiteral(":/Cards/img/UI20/Cards/error_icon.png")).scaledToHeight(LINE_HEIGHT, Qt::SmoothTransformation));
+            m_iconLabel->setPixmap(Style::cachedPixmap(QStringLiteral(":/Cards/img/UI20/Cards/error_icon.png"))
+                                       .scaledToHeight(LINE_HEIGHT, Qt::SmoothTransformation));
             break;
         default:
             break;
@@ -108,4 +109,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/ColorPicker/moc_ColorWarning.cpp"
+#endif

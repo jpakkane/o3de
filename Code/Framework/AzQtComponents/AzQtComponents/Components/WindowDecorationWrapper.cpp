@@ -9,27 +9,27 @@
 #include <AzCore/PlatformIncl.h>
 #include <qglobal.h> // For Q_OS_WIN
 
-#include <AzQtComponents/Components/WindowDecorationWrapper.h>
 #include <AzQtComponents/Components/DockBarButton.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
-#include <AzQtComponents/Components/Titlebar.h>
 #include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
+#include <AzQtComponents/Components/Titlebar.h>
+#include <AzQtComponents/Components/WindowDecorationWrapper.h>
 #include <AzQtComponents/Utilities/QtWindowUtilities.h>
 
-#include <QTimer>
-#include <QPainter>
-#include <QDebug>
 #include <QApplication>
-#include <QSettings>
-#include <QWindow>
-#include <QScreen>
 #include <QCloseEvent>
+#include <QDebug>
 #include <QDesktopWidget>
 #include <QDialog>
-#include <QStyleOption>
-#include <QScopedValueRollback>
-#include <QStyle>
 #include <QLayout>
+#include <QPainter>
+#include <QScopedValueRollback>
+#include <QScreen>
+#include <QSettings>
+#include <QStyle>
+#include <QStyleOption>
+#include <QTimer>
+#include <QWindow>
 #include <QtGui/private/qhighdpiscaling_p.h>
 
 #ifdef Q_OS_WIN
@@ -78,12 +78,8 @@ namespace AzQtComponents
             quint8 fullScreen;
             qint32 restoredScreenWidth;
 
-            stream >> restoredFrameGeometry
-                >> restoredNormalGeometry
-                >> restoredScreenNumber
-                >> maximized
-                >> fullScreen
-                >> restoredScreenWidth;
+            stream >> restoredFrameGeometry >> restoredNormalGeometry >> restoredScreenNumber >> maximized >> fullScreen >>
+                restoredScreenWidth;
             if (!window->isVisible())
             {
                 if (maximized || fullScreen)
@@ -103,11 +99,10 @@ namespace AzQtComponents
                 // instead of respecting the available space (e.g. taskbar)
                 window->setGeometry(QApplication::desktop()->availableGeometry(window));
             }
-            
 
             return true;
         }
-    }
+    } // namespace
 
     WindowDecorationWrapper::WindowDecorationWrapper(Options options, QWidget* parent)
         : QFrame(parent, options & OptionDisabled ? Qt::Window : WindowDecorationWrapper::specialFlagsForOS() | Qt::Window)
@@ -117,9 +112,8 @@ namespace AzQtComponents
         if (m_titleBar)
         {
             m_titleBar->setDragEnabled(true);
-            m_titleBar->setButtons({ DockBarButton::DividerButton, DockBarButton::MinimizeButton,
-                                     DockBarButton::DividerButton, DockBarButton::MaximizeButton,
-                                     DockBarButton::DividerButton, DockBarButton::CloseButton});
+            m_titleBar->setButtons({ DockBarButton::DividerButton, DockBarButton::MinimizeButton, DockBarButton::DividerButton,
+                                     DockBarButton::MaximizeButton, DockBarButton::DividerButton, DockBarButton::CloseButton });
         }
         adjustTitleBarGeometry();
         m_initialized = true;
@@ -165,27 +159,28 @@ namespace AzQtComponents
 
         m_shouldCenterInParent = shouldCenterInParent(guest); // Don't move this variable after applyFlagsAndAttributes()
         guest->setParent(this);
-        connect(guest, &QWidget::windowTitleChanged,
-            this, &WindowDecorationWrapper::onWindowTitleChanged);
+        connect(guest, &QWidget::windowTitleChanged, this, &WindowDecorationWrapper::onWindowTitleChanged);
 
         // The wrapper is deleted when widget is destroyed
         // Connect even if OptionDisable is used otherwise the WindowDecorationWrapper is still
         // visible after the guest widget is closed.
-        connect(guest, &QWidget::destroyed, this, [this]
-        {
-            m_guestWidget = nullptr;
-
-            // the Open 3D Engine Editor has code that checks for Modal widgets, and blocks on doing other things
-            // if there are still active Modal dialogs.
-            // So we need to ensure that this WindowDecorationWrapper doesn't report itself as being modal
-            // after the guest widget has been deleted.
-            if (isModal())
+        connect(
+            guest, &QWidget::destroyed, this,
+            [this]
             {
-                setWindowModality(Qt::NonModal);
-            }
+                m_guestWidget = nullptr;
 
-            deleteLater();
-        });
+                // the Open 3D Engine Editor has code that checks for Modal widgets, and blocks on doing other things
+                // if there are still active Modal dialogs.
+                // So we need to ensure that this WindowDecorationWrapper doesn't report itself as being modal
+                // after the guest widget has been deleted.
+                if (isModal())
+                {
+                    setWindowModality(Qt::NonModal);
+                }
+
+                deleteLater();
+            });
 
         if (m_options & OptionDisabled)
         {
@@ -242,13 +237,13 @@ namespace AzQtComponents
             QRect geo = geometry();
             geo.moveCenter(parentWindowCenter);
 
-            QWindow *w = topLevelWidget->windowHandle();
+            QWindow* w = topLevelWidget->windowHandle();
             if (!w)
             {
                 return;
             }
 
-            QScreen *screen = w->screen();
+            QScreen* screen = w->screen();
             if (!screen)
             {
                 // defensive, shouldn't happen
@@ -283,7 +278,8 @@ namespace AzQtComponents
         return m_titleBar;
     }
 
-    void WindowDecorationWrapper::enableSaveRestoreGeometry(const QString& organization, const QString& app, const QString& key, bool autoRestoreOnShow)
+    void WindowDecorationWrapper::enableSaveRestoreGeometry(
+        const QString& organization, const QString& app, const QString& key, bool autoRestoreOnShow)
     {
         enableSaveRestoreGeometry(new QSettings(organization, app, this), key, autoRestoreOnShow);
     }
@@ -455,15 +451,18 @@ namespace AzQtComponents
             // use a timer to trigger this as soon as possible, but not now.
             // We're in the middle of the show right now and restoreGeometryFromSettings
             // can call show. No recursion shenanigans.
-            QTimer::singleShot(0, this, [this] {
-                if (!restoreGeometryFromSettings())
+            QTimer::singleShot(
+                0, this,
+                [this]
                 {
-                    // default to centering it on screen if the restore failed
-                    centerOnScreen(this);
-                }
+                    if (!restoreGeometryFromSettings())
+                    {
+                        // default to centering it on screen if the restore failed
+                        centerOnScreen(this);
+                    }
 
-                m_blockForRestoreOnShow = false;
-            });
+                    m_blockForRestoreOnShow = false;
+                });
 
             // reset this so that we don't do this again
             m_autoRestoreOnShow = false;
@@ -500,9 +499,9 @@ namespace AzQtComponents
 
         if (isWin10())
         {
-            if (widget->window() && msg->message == WM_NCHITTEST && GetAsyncKeyState(VK_RBUTTON) >= 0) // We're not interested in right click
+            if (widget->window() && msg->message == WM_NCHITTEST &&
+                GetAsyncKeyState(VK_RBUTTON) >= 0) // We're not interested in right click
             {
-
                 /**
                  * This code block enables Windows native dragging, which enables the "Aero Snap" feature,
                  * where we can snap our windows to the sides of the screen.
@@ -511,7 +510,7 @@ namespace AzQtComponents
                 const LRESULT defWinProcResult = DefWindowProc(handle, msg->message, msg->wParam, msg->lParam);
                 if (defWinProcResult == 1)
                 {
-                    if (auto wrapper = qobject_cast<const WindowDecorationWrapper *>(widget))
+                    if (auto wrapper = qobject_cast<const WindowDecorationWrapper*>(widget))
                     {
                         /**
                          * We only care about the title bars belonging to WindowDecorationWrapper.
@@ -564,7 +563,7 @@ namespace AzQtComponents
             // Get the sizes Windows would have chosen
             DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
 
-            const QScreen *screen = w->screen();
+            const QScreen* screen = w->screen();
             const QRect availableGeometry = QHighDpi::toNativePixels(screen->availableGeometry(), screen);
             auto mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
             mmi->ptMaxSize.y = availableGeometry.height();
@@ -683,12 +682,7 @@ namespace AzQtComponents
         }
 
         // Copy relevant attributes from widget
-        const QList<Qt::WidgetAttribute> attrs = {
-            Qt::WA_DeleteOnClose,
-            Qt::WA_QuitOnClose,
-            Qt::WA_ShowModal,
-            Qt::WA_Hover
-        };
+        const QList<Qt::WidgetAttribute> attrs = { Qt::WA_DeleteOnClose, Qt::WA_QuitOnClose, Qt::WA_ShowModal, Qt::WA_Hover };
         for (auto attr : attrs)
         {
             setAttribute(attr, m_guestWidget->testAttribute(attr));
@@ -815,7 +809,7 @@ namespace AzQtComponents
         return isWin10() ? Qt::WindowFlags() : Qt::CustomizeWindowHint;
     }
 
-    void WindowDecorationWrapper::drawFrame(const QStyleOption *option, QPainter *painter, const QWidget *widget)
+    void WindowDecorationWrapper::drawFrame(const QStyleOption* option, QPainter* painter, const QWidget* widget)
     {
         Q_UNUSED(widget);
         painter->save();
@@ -832,4 +826,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_WindowDecorationWrapper.cpp"
+#endif

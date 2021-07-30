@@ -6,9 +6,9 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/ColorPicker/ColorValidator.h>
 #include <AzCore/Math/MathUtils.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorController.h>
+#include <AzQtComponents/Components/Widgets/ColorPicker/ColorValidator.h>
 
 namespace AzQtComponents
 {
@@ -27,13 +27,15 @@ namespace AzQtComponents
 
     void RGBColorValidator::warn()
     {
-        Q_EMIT colorWarning(QStringLiteral("The selected color has an alpha setting other than 255/1.0 and will be used with the alpha channel set to 255/1.0"));
+        Q_EMIT colorWarning(QStringLiteral(
+            "The selected color has an alpha setting other than 255/1.0 and will be used with the alpha channel set to 255/1.0"));
     }
 
     bool RGBALowRangeValidator::isValid(const Internal::ColorController* controller)
     {
         const float maxChannelValue = 1.0f;
-        return (controller->red() <= maxChannelValue) && (controller->green() <= maxChannelValue) && (controller->blue() <= maxChannelValue) && (controller->alpha() <= maxChannelValue);
+        return (controller->red() <= maxChannelValue) && (controller->green() <= maxChannelValue) &&
+            (controller->blue() <= maxChannelValue) && (controller->alpha() <= maxChannelValue);
     }
 
     void RGBALowRangeValidator::adjust(Internal::ColorController* controller)
@@ -63,14 +65,14 @@ namespace AzQtComponents
 
     void RGBALowRangeValidator::warn()
     {
-        Q_EMIT colorWarning(QStringLiteral("The selected color is in the high dynamic range and will be clamped so that each channel is between 0 and 1"));
+        Q_EMIT colorWarning(
+            QStringLiteral("The selected color is in the high dynamic range and will be clamped so that each channel is between 0 and 1"));
     }
 
     HueSaturationValidator::HueSaturationValidator(float defaultV, QObject* parent)
         : ColorValidator(parent)
         , m_defaultV(defaultV)
     {
-
     }
 
     bool HueSaturationValidator::isValid(const Internal::ColorController* controller)
@@ -85,8 +87,12 @@ namespace AzQtComponents
 
     void HueSaturationValidator::warn()
     {
-        Q_EMIT colorWarning(QStringLiteral("The selected color has an invalid 'value' channel. It will be clamped to the default value of %1").arg(m_defaultV));
+        Q_EMIT colorWarning(
+            QStringLiteral("The selected color has an invalid 'value' channel. It will be clamped to the default value of %1")
+                .arg(m_defaultV));
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/ColorPicker/moc_ColorValidator.cpp"
+#endif

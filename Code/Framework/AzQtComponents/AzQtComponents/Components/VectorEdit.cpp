@@ -7,10 +7,10 @@
  */
 #include <AzQtComponents/Components/VectorEdit.h>
 
-#include <QHBoxLayout>
 #include <QDoubleValidator>
-#include <QSignalBlocker>
+#include <QHBoxLayout>
 #include <QIcon>
+#include <QSignalBlocker>
 
 namespace AzQtComponents
 {
@@ -30,8 +30,7 @@ namespace AzQtComponents
         layout->setSpacing(3);
 
         m_lineEdit->setValidator(new QDoubleValidator(this));
-        connect(m_lineEdit, &QLineEdit::textChanged,
-            this, &VectorEditElement::valueChanged);
+        connect(m_lineEdit, &QLineEdit::textChanged, this, &VectorEditElement::valueChanged);
 
         m_label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     }
@@ -127,8 +126,7 @@ namespace AzQtComponents
             auto element = new VectorEditElement(label, this);
             layout->addWidget(element);
             m_editElements.append(element);
-            connect(element, &VectorEditElement::valueChanged,
-                this, &VectorEdit::vectorChanged);
+            connect(element, &VectorEditElement::valueChanged, this, &VectorEdit::vectorChanged);
         }
 
         outterLayout->addSpacing(4);
@@ -138,9 +136,7 @@ namespace AzQtComponents
 
     QVector3D VectorEdit::vector() const
     {
-        return {
-                   x(), y(), z()
-        };
+        return { x(), y(), z() };
     }
 
     float VectorEdit::x() const
@@ -236,7 +232,7 @@ namespace AzQtComponents
         }
 
         m_flavor = flavor;
-        foreach(auto edit, m_editElements)
+        foreach (auto edit, m_editElements)
         {
             edit->setFlavor(flavor);
         }
@@ -298,6 +294,8 @@ namespace AzQtComponents
         // Signal is emitted automatically
     }
 
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_VectorEdit.cpp"
+#endif

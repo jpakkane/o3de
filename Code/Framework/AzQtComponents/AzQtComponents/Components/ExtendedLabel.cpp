@@ -7,7 +7,8 @@
  */
 
 #include "ExtendedLabel.h"
-AZ_PUSH_DISABLE_WARNING(4251 4244, "-Wunknown-warning-option") // 4251: 'QVariant::d': struct 'QVariant::Private' needs to have dll-interface to be used by clients of class 'QVariant'
+AZ_PUSH_DISABLE_WARNING(4251 4244, "-Wunknown-warning-option") // 4251: 'QVariant::d': struct 'QVariant::Private' needs to have
+                                                               // dll-interface to be used by clients of class 'QVariant'
 #include <QVariant>
 AZ_POP_DISABLE_WARNING
 
@@ -51,14 +52,10 @@ namespace AzQtComponents
                 realHeight = this->height();
             }
 
-            double aspectRatioExpected = aspectRatio(
-                realWidth,
-                realHeight);
-            double aspectRatioSource = aspectRatio(
-                m_pix.width(),
-                m_pix.height());
+            double aspectRatioExpected = aspectRatio(realWidth, realHeight);
+            double aspectRatioSource = aspectRatio(m_pix.width(), m_pix.height());
 
-            //use the one that fits
+            // use the one that fits
             if (aspectRatioExpected > aspectRatioSource)
             {
                 QLabel::setPixmap(m_pix.scaledToHeight(realHeight));
@@ -90,4 +87,6 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_ExtendedLabel.cpp"
+#endif

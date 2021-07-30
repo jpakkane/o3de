@@ -202,3 +202,5 @@ azcore_files += files(
 'Time/TimeSystemComponent.cpp',
 'Memory/HeapSchema.cpp',
 )
+
+subdir('std')

@@ -37,4 +37,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Utilities/moc_ScreenGrabber.cpp"
+#endif

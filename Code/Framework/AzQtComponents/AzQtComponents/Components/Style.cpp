@@ -7,43 +7,44 @@
  */
 #include <QtGlobal>
 
+#include <AzQtComponents/Components/ConfigHelpers.h>
+#include <AzQtComponents/Components/FilteredSearchWidget.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleHelpers.h>
-#include <AzQtComponents/Components/ConfigHelpers.h>
+#include <AzQtComponents/Components/StyledBusyLabel.h>
+#include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
+#include <AzQtComponents/Components/Titlebar.h>
+#include <AzQtComponents/Components/Widgets/AssetFolderThumbnailView.h>
+#include <AzQtComponents/Components/Widgets/BreadCrumbs.h>
+#include <AzQtComponents/Components/Widgets/BrowseEdit.h>
+#include <AzQtComponents/Components/Widgets/Card.h>
+#include <AzQtComponents/Components/Widgets/CheckBox.h>
+#include <AzQtComponents/Components/Widgets/ColorPicker.h>
+#include <AzQtComponents/Components/Widgets/ColorPicker/PaletteView.h>
+#include <AzQtComponents/Components/Widgets/ComboBox.h>
 #include <AzQtComponents/Components/Widgets/DialogButtonBox.h>
 #include <AzQtComponents/Components/Widgets/DragAndDrop.h>
-#include <AzQtComponents/Components/Widgets/PushButton.h>
-#include <AzQtComponents/Components/Widgets/CheckBox.h>
-#include <AzQtComponents/Components/Widgets/RadioButton.h>
-#include <AzQtComponents/Components/Widgets/ProgressBar.h>
-#include <AzQtComponents/Components/Widgets/Slider.h>
-#include <AzQtComponents/Components/Widgets/Card.h>
-#include <AzQtComponents/Components/Widgets/ColorPicker.h>
 #include <AzQtComponents/Components/Widgets/Eyedropper.h>
-#include <AzQtComponents/Components/Widgets/ColorPicker/PaletteView.h>
 #include <AzQtComponents/Components/Widgets/LineEdit.h>
-#include <AzQtComponents/Components/Widgets/ComboBox.h>
-#include <AzQtComponents/Components/Widgets/BrowseEdit.h>
-#include <AzQtComponents/Components/Widgets/BreadCrumbs.h>
-#include <AzQtComponents/Components/Widgets/SpinBox.h>
+#include <AzQtComponents/Components/Widgets/Menu.h>
+#include <AzQtComponents/Components/Widgets/ProgressBar.h>
+#include <AzQtComponents/Components/Widgets/PushButton.h>
+#include <AzQtComponents/Components/Widgets/RadioButton.h>
 #include <AzQtComponents/Components/Widgets/ScrollBar.h>
+#include <AzQtComponents/Components/Widgets/Slider.h>
+#include <AzQtComponents/Components/Widgets/SpinBox.h>
 #include <AzQtComponents/Components/Widgets/StatusBar.h>
 #include <AzQtComponents/Components/Widgets/TabWidget.h>
 #include <AzQtComponents/Components/Widgets/TableView.h>
-#include <AzQtComponents/Components/Widgets/TreeView.h>
-#include <AzQtComponents/Components/Widgets/Menu.h>
 #include <AzQtComponents/Components/Widgets/Text.h>
 #include <AzQtComponents/Components/Widgets/ToolBar.h>
 #include <AzQtComponents/Components/Widgets/ToolButton.h>
+#include <AzQtComponents/Components/Widgets/TreeView.h>
 #include <AzQtComponents/Components/Widgets/VectorInput.h>
-#include <AzQtComponents/Components/FilteredSearchWidget.h>
-#include <AzQtComponents/Components/Widgets/AssetFolderThumbnailView.h>
-#include <AzQtComponents/Components/Titlebar.h>
-#include <AzQtComponents/Components/StyledBusyLabel.h>
-#include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
 #include <AzQtComponents/Utilities/TextUtilities.h>
 
-AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: class '...' needs to have dll-interface to be used by clients of class '...'
+AZ_PUSH_DISABLE_WARNING(
+    4251, "-Wunknown-warning-option") // 4251: class '...' needs to have dll-interface to be used by clients of class '...'
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
@@ -83,11 +84,10 @@ namespace AzQtComponents
     // See ::drawPrimitive below for more info.
     static QString g_treeViewDisableDefaultArrorPainting = QStringLiteral("DisableArrowPainting");
 
-    static const char g_removeAllStylingProperty[] = {"RemoveAllStyling"};
+    static const char g_removeAllStylingProperty[] = { "RemoveAllStyling" };
 
     // Constant for the docking drop zone hotspot color when hovered over
     static const QColor g_dropZoneColorOnHover(23, 163, 205);
-
 
     // Private data structure
     struct Style::Data
@@ -129,7 +129,7 @@ namespace AzQtComponents
     };
 
     // Local template function to load config data from .ini files
-    template <typename ConfigType, typename WidgetType>
+    template<typename ConfigType, typename WidgetType>
     void loadConfig(Style* style, QFileSystemWatcher* watcher, ConfigType* config, const QString& path)
     {
         QString fullPath = QStringLiteral("AzQtComponentWidgets:%1").arg(path);
@@ -173,7 +173,8 @@ namespace AzQtComponents
         loadConfig<Card::Config, Card>(this, &m_data->watcher, &m_data->cardConfig, "CardConfig.ini");
         loadConfig<ColorPicker::Config, ColorPicker>(this, &m_data->watcher, &m_data->colorPickerConfig, "ColorPickerConfig.ini");
         loadConfig<Eyedropper::Config, Eyedropper>(this, &m_data->watcher, &m_data->eyedropperConfig, "EyedropperConfig.ini");
-        loadConfig<PaletteView::Config, PaletteView>(this, &m_data->watcher, &m_data->paletteViewConfig, "ColorPicker/PaletteViewConfig.ini");
+        loadConfig<PaletteView::Config, PaletteView>(
+            this, &m_data->watcher, &m_data->paletteViewConfig, "ColorPicker/PaletteViewConfig.ini");
         loadConfig<LineEdit::Config, LineEdit>(this, &m_data->watcher, &m_data->lineEditConfig, "LineEditConfig.ini");
         loadConfig<ComboBox::Config, ComboBox>(this, &m_data->watcher, &m_data->comboBoxConfig, "ComboBoxConfig.ini");
         loadConfig<BrowseEdit::Config, BrowseEdit>(this, &m_data->watcher, &m_data->browseEditConfig, "BrowseEditConfig.ini");
@@ -183,8 +184,10 @@ namespace AzQtComponents
         loadConfig<TabWidget::Config, TabWidget>(this, &m_data->watcher, &m_data->tabWidgetConfig, "TabWidgetConfig.ini");
         loadConfig<TableView::Config, TableView>(this, &m_data->watcher, &m_data->tableViewConfig, "TableViewConfig.ini");
         loadConfig<Text::Config, Text>(this, &m_data->watcher, &m_data->textConfig, "TextConfig.ini");
-        loadConfig<FilteredSearchWidget::Config, FilteredSearchWidget>(this, &m_data->watcher, &m_data->filteredSearchWidgetConfig, "FilteredSearchWidgetConfig.ini");
-        loadConfig<AssetFolderThumbnailView::Config, AssetFolderThumbnailView>(this, &m_data->watcher, &m_data->assetFolderThumbnailViewConfig, "AssetFolderThumbnailViewConfig.ini");
+        loadConfig<FilteredSearchWidget::Config, FilteredSearchWidget>(
+            this, &m_data->watcher, &m_data->filteredSearchWidgetConfig, "FilteredSearchWidgetConfig.ini");
+        loadConfig<AssetFolderThumbnailView::Config, AssetFolderThumbnailView>(
+            this, &m_data->watcher, &m_data->assetFolderThumbnailViewConfig, "AssetFolderThumbnailViewConfig.ini");
         loadConfig<TitleBar::Config, TitleBar>(this, &m_data->watcher, &m_data->titleBarConfig, "TitleBarConfig.ini");
         loadConfig<Menu::Config, Menu>(this, &m_data->watcher, &m_data->menuConfig, "MenuConfig.ini");
         loadConfig<ToolButton::Config, ToolButton>(this, &m_data->watcher, &m_data->toolButtonConfig, "ToolButtonConfig.ini");
@@ -224,7 +227,6 @@ namespace AzQtComponents
         return g_dropZoneColorOnHover;
     }
 
-
     QSize Style::sizeFromContents(QStyle::ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const
     {
         if (!hasStyle(widget))
@@ -234,41 +236,41 @@ namespace AzQtComponents
 
         switch (type)
         {
-            case QStyle::CT_PushButton:
-                if (qobject_cast<const QPushButton*>(widget))
-                {
-                    return PushButton::sizeFromContents(this, type, option, size, widget, m_data->pushButtonConfig);
-                }
-                break;
+        case QStyle::CT_PushButton:
+            if (qobject_cast<const QPushButton*>(widget))
+            {
+                return PushButton::sizeFromContents(this, type, option, size, widget, m_data->pushButtonConfig);
+            }
+            break;
 
-            case QStyle::CT_ToolButton:
-                if (qobject_cast<const QToolButton*>(widget))
-                {
-                    return ToolButton::sizeFromContents(this, type, option, size, widget, m_data->toolButtonConfig);
-                }
-                break;
+        case QStyle::CT_ToolButton:
+            if (qobject_cast<const QToolButton*>(widget))
+            {
+                return ToolButton::sizeFromContents(this, type, option, size, widget, m_data->toolButtonConfig);
+            }
+            break;
 
-            case QStyle::CT_CheckBox:
-                if (qobject_cast<const QCheckBox*>(widget))
-                {
-                    return CheckBox::sizeFromContents(this, type, option, size, widget, m_data->checkBoxConfig);
-                }
-                break;
+        case QStyle::CT_CheckBox:
+            if (qobject_cast<const QCheckBox*>(widget))
+            {
+                return CheckBox::sizeFromContents(this, type, option, size, widget, m_data->checkBoxConfig);
+            }
+            break;
 
-            case QStyle::CT_RadioButton:
-                if (qobject_cast<const QRadioButton*>(widget))
-                {
-                    return RadioButton::sizeFromContents(this, type, option, size, widget, m_data->radioButtonConfig);
-                }
-                break;
+        case QStyle::CT_RadioButton:
+            if (qobject_cast<const QRadioButton*>(widget))
+            {
+                return RadioButton::sizeFromContents(this, type, option, size, widget, m_data->radioButtonConfig);
+            }
+            break;
 
-            case QStyle::CT_ProgressBar:
-                if (qobject_cast<const QProgressBar*>(widget))
-                {
-                    return ProgressBar::sizeFromContents(this, type, option, size, widget, m_data->progressBarConfig);
-                }
-                break;
-            case QStyle::CT_ComboBox:
+        case QStyle::CT_ProgressBar:
+            if (qobject_cast<const QProgressBar*>(widget))
+            {
+                return ProgressBar::sizeFromContents(this, type, option, size, widget, m_data->progressBarConfig);
+            }
+            break;
+        case QStyle::CT_ComboBox:
             {
                 if (qobject_cast<const QComboBox*>(widget))
                 {
@@ -276,7 +278,7 @@ namespace AzQtComponents
                 }
                 break;
             }
-            case QStyle::CT_TabBarTab:
+        case QStyle::CT_TabBarTab:
             {
                 const auto tabSize = TabBar::sizeFromContents(this, type, option, size, widget, m_data->tabWidgetConfig);
                 if (tabSize.isValid())
@@ -285,7 +287,7 @@ namespace AzQtComponents
                 }
                 break;
             }
-            case QStyle::CT_HeaderSection:
+        case QStyle::CT_HeaderSection:
             {
                 const auto headerSize = TableView::sizeFromContents(this, type, option, size, widget, m_data->tableViewConfig);
                 if (headerSize.isValid())
@@ -312,7 +314,7 @@ namespace AzQtComponents
         prepPainter(painter);
         switch (element)
         {
-            case CE_ShapedFrame:
+        case CE_ShapedFrame:
             {
                 if (BrowseEdit::drawFrame(this, option, painter, widget, m_data->browseEditConfig))
                 {
@@ -321,7 +323,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_PushButtonBevel:
+        case CE_PushButtonBevel:
             {
                 if (qobject_cast<const QPushButton*>(widget))
                 {
@@ -333,7 +335,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_CheckBox:
+        case CE_CheckBox:
             {
                 if (qobject_cast<const QCheckBox*>(widget))
                 {
@@ -345,7 +347,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_CheckBoxLabel:
+        case CE_CheckBoxLabel:
             {
                 if (qobject_cast<const QCheckBox*>(widget))
                 {
@@ -357,7 +359,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_RadioButton:
+        case CE_RadioButton:
             {
                 if (qobject_cast<const QRadioButton*>(widget))
                 {
@@ -369,7 +371,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_RadioButtonLabel:
+        case CE_RadioButtonLabel:
             {
                 if (qobject_cast<const QRadioButton*>(widget))
                 {
@@ -381,7 +383,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_TabBarTabLabel:
+        case CE_TabBarTabLabel:
             {
                 if (qobject_cast<const QTabBar*>(widget))
                 {
@@ -390,7 +392,8 @@ namespace AzQtComponents
                     // text alignment if not creating a new member variable for QStyleOptionTab (or to subclass QStyleOptionTab) on Qt
                     // side. To avoid doing either, we set a new variable to be used from Style::drawItemText, with a scope limited to
                     // the drawing of this specific control element (the tab label).
-                    QScopedValueRollback<QVariant> rollbackTabBarTabLabel(m_drawItemTextAlignmentOverride, {(int)(Qt::AlignLeft | Qt::AlignVCenter)});
+                    QScopedValueRollback<QVariant> rollbackTabBarTabLabel(
+                        m_drawItemTextAlignmentOverride, { (int)(Qt::AlignLeft | Qt::AlignVCenter) });
                     if (TabBar::drawTabBarTabLabel(this, option, painter, widget, m_data->tabWidgetConfig))
                     {
                         return;
@@ -399,7 +402,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_Header:
+        case CE_Header:
             {
                 if (qobject_cast<const QHeaderView*>(widget))
                 {
@@ -411,7 +414,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_HeaderSection:
+        case CE_HeaderSection:
             {
                 if (qobject_cast<const QHeaderView*>(widget))
                 {
@@ -423,7 +426,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_ComboBoxLabel:
+        case CE_ComboBoxLabel:
             {
                 if (qobject_cast<const QComboBox*>(widget))
                 {
@@ -435,7 +438,7 @@ namespace AzQtComponents
             }
             break;
 
-            case CE_ItemViewItem:
+        case CE_ItemViewItem:
             {
                 // For styling QTableView and QListView
                 auto tableView = qobject_cast<const QTableView*>(widget);
@@ -480,7 +483,8 @@ namespace AzQtComponents
                 }
                 else if (validTreeView)
                 {
-                    if (TreeView::isBranchLinesEnabled(treeView) && qobject_cast<BranchDelegate*>(treeView->itemDelegate()) && option->state.testFlag(QStyle::State_Children))
+                    if (TreeView::isBranchLinesEnabled(treeView) && qobject_cast<BranchDelegate*>(treeView->itemDelegate()) &&
+                        option->state.testFlag(QStyle::State_Children))
                     {
                         auto copy = *itemOption;
                         copy.rect.adjust(treeView->indentation(), 0, 0, 0);
@@ -489,7 +493,7 @@ namespace AzQtComponents
                 }
             }
             break;
-            case CE_MenuItem:
+        case CE_MenuItem:
             {
                 const QMenu* menu = qobject_cast<const QMenu*>(widget);
                 QAction* action = menu->activeAction();
@@ -518,7 +522,7 @@ namespace AzQtComponents
                 if (!myOpt.icon.isNull() && checked)
                 {
                     const int iconSize{ 18 };
-                    int topPadding{ AZStd::max( 0 , (myOpt.rect.height() - iconSize) / 2) - 1};
+                    int topPadding{ AZStd::max(0, (myOpt.rect.height() - iconSize) / 2) - 1 };
 
                     QProxyStyle::drawControl(element, &myOpt, painter, widget);
                     myOpt.rect.adjust(0, topPadding, iconSize - myOpt.rect.width(), iconSize - myOpt.rect.height());
@@ -568,7 +572,7 @@ namespace AzQtComponents
         prepPainter(painter);
         switch (element)
         {
-            case PE_PanelLineEdit:
+        case PE_PanelLineEdit:
             {
                 if (LineEdit::drawFrame(this, option, painter, widget, m_data->lineEditConfig))
                 {
@@ -577,7 +581,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_FrameFocusRect:
+        case PE_FrameFocusRect:
             {
                 // We're not passing the widget parameter to TableView because for some reason QTreeView doesn't
                 // use this parameter when calling QStyle::drawPrimitive to draw PE_FrameFocusRect (so it's always nullptr)
@@ -595,7 +599,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_PanelButtonTool:
+        case PE_PanelButtonTool:
             {
                 if (PushButton::drawPushButtonBevel(this, option, painter, widget, m_data->pushButtonConfig))
                 {
@@ -604,9 +608,10 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_IndicatorArrowDown:
+        case PE_IndicatorArrowDown:
             {
-                if (qobject_cast<const QComboBox*>(widget) && ComboBox::drawIndicatorArrow(this, option, painter, widget, m_data->comboBoxConfig))
+                if (qobject_cast<const QComboBox*>(widget) &&
+                    ComboBox::drawIndicatorArrow(this, option, painter, widget, m_data->comboBoxConfig))
                 {
                     return;
                 }
@@ -621,7 +626,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_IndicatorItemViewItemDrop:
+        case PE_IndicatorItemViewItemDrop:
             {
                 if (PaletteView::drawDropIndicator(this, option, painter, widget, m_data->paletteViewConfig))
                 {
@@ -634,7 +639,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_IndicatorBranch:
+        case PE_IndicatorBranch:
             {
                 if (TreeView::drawBranchIndicator(this, option, painter, widget, m_data->treeViewConfig))
                 {
@@ -668,7 +673,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_PanelMenu:
+        case PE_PanelMenu:
             {
                 if (Menu::drawFrame(this, option, painter, widget, m_data->menuConfig))
                 {
@@ -677,7 +682,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_IndicatorItemViewItemCheck:
+        case PE_IndicatorItemViewItemCheck:
             {
                 if (ComboBox::drawItemCheckIndicator(this, option, painter, widget, m_data->comboBoxConfig))
                 {
@@ -686,7 +691,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_PanelStatusBar:
+        case PE_PanelStatusBar:
             {
                 if (StatusBar::drawPanelStatusBar(this, option, painter, widget, m_data->statusBarConfig))
                 {
@@ -695,7 +700,7 @@ namespace AzQtComponents
             }
             break;
 
-            case PE_PanelItemViewRow:
+        case PE_PanelItemViewRow:
             {
                 /** HACK
                  * For TableView, we want the first row to use the alternate color, not the second one.
@@ -727,7 +732,8 @@ namespace AzQtComponents
         return QProxyStyle::drawPrimitive(element, option, painter, widget);
     }
 
-    void Style::drawComplexControl(QStyle::ComplexControl element, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget) const
+    void Style::drawComplexControl(
+        QStyle::ComplexControl element, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget) const
     {
         if (!hasStyle(widget))
         {
@@ -739,53 +745,60 @@ namespace AzQtComponents
 
         switch (element)
         {
-            case CC_SpinBox:
-                if (SpinBox::drawSpinBox(this, option, painter, widget, m_data->spinBoxConfig))
-                {
-                    return;
-                }
-                break;
+        case CC_SpinBox:
+            if (SpinBox::drawSpinBox(this, option, painter, widget, m_data->spinBoxConfig))
+            {
+                return;
+            }
+            break;
 
-            case CC_Slider:
-                if (auto sliderOption = qstyleoption_cast<const QStyleOptionSlider*>(option))
+        case CC_Slider:
+            if (auto sliderOption = qstyleoption_cast<const QStyleOptionSlider*>(option))
+            {
+                if (Slider::drawSlider(this, sliderOption, painter, widget, m_data->sliderConfig))
                 {
-                    if (Slider::drawSlider(this, sliderOption, painter, widget, m_data->sliderConfig))
-                    {
-                        return;
-                    }
+                    return;
                 }
-                break;
+            }
+            break;
 
-            case CC_ToolButton:
-                if (DockBarButton::drawDockBarButton(this, option, painter, widget, m_data->dockBarButtonConfig))
-                {
-                    return;
-                }
-                if (ToolButton::drawToolButton(this, option, painter, widget, m_data->toolButtonConfig))
-                {
-                    return;
-                }
-                break;
+        case CC_ToolButton:
+            if (DockBarButton::drawDockBarButton(this, option, painter, widget, m_data->dockBarButtonConfig))
+            {
+                return;
+            }
+            if (ToolButton::drawToolButton(this, option, painter, widget, m_data->toolButtonConfig))
+            {
+                return;
+            }
+            break;
 
-            case CC_ComboBox:
-                if (ComboBox::drawComboBox(this, option, painter, widget, m_data->comboBoxConfig))
-                {
-                    return;
-                }
-                break;
+        case CC_ComboBox:
+            if (ComboBox::drawComboBox(this, option, painter, widget, m_data->comboBoxConfig))
+            {
+                return;
+            }
+            break;
 
-            case CC_ScrollBar:
-                if (ScrollBar::drawScrollBar(this, option, painter, widget, m_data->scrollBarConfig))
-                {
-                    return;
-                }
-                break;
+        case CC_ScrollBar:
+            if (ScrollBar::drawScrollBar(this, option, painter, widget, m_data->scrollBarConfig))
+            {
+                return;
+            }
+            break;
         }
 
         return QProxyStyle::drawComplexControl(element, option, painter, widget);
     }
 
-    void Style::drawItemText(QPainter* painter, const QRect& rectangle, int alignment, const QPalette& palette, bool enabled, const QString& text, QPalette::ColorRole textRole) const
+    void Style::drawItemText(
+        QPainter* painter,
+        const QRect& rectangle,
+        int alignment,
+        const QPalette& palette,
+        bool enabled,
+        const QString& text,
+        QPalette::ColorRole textRole) const
     {
         if (m_drawItemTextAlignmentOverride.isValid())
         {
@@ -822,7 +835,8 @@ namespace AzQtComponents
         return QProxyStyle::generatedIconPixmap(iconMode, pixmap, option);
     }
 
-    QRect Style::subControlRect(ComplexControl control, const QStyleOptionComplex* option, SubControl subControl, const QWidget* widget) const
+    QRect Style::subControlRect(
+        ComplexControl control, const QStyleOptionComplex* option, SubControl subControl, const QWidget* widget) const
     {
         if (!hasStyle(widget))
         {
@@ -831,21 +845,21 @@ namespace AzQtComponents
 
         switch (control)
         {
-            case CC_ComboBox:
+        case CC_ComboBox:
             {
                 if (auto comboBoxOption = qstyleoption_cast<const QStyleOptionComboBox*>(option))
                 {
                     switch (subControl)
                     {
                     case SC_ComboBoxListBoxPopup:
-                    {
-                        QRect r = ComboBox::comboBoxListBoxPopupRect(this, comboBoxOption, widget, m_data->comboBoxConfig);
-                        if (!r.isNull())
                         {
-                            return r;
+                            QRect r = ComboBox::comboBoxListBoxPopupRect(this, comboBoxOption, widget, m_data->comboBoxConfig);
+                            if (!r.isNull())
+                            {
+                                return r;
+                            }
                         }
-                    }
-                    break;
+                        break;
 
                     default:
                         break;
@@ -853,13 +867,13 @@ namespace AzQtComponents
                 }
             }
             break;
-            case CC_Slider:
+        case CC_Slider:
             {
                 if (auto sliderOption = qstyleoption_cast<const QStyleOptionSlider*>(option))
                 {
                     switch (subControl)
                     {
-                        case SC_SliderHandle:
+                    case SC_SliderHandle:
                         {
                             QRect r = Slider::sliderHandleRect(this, sliderOption, widget, m_data->sliderConfig);
                             if (!r.isNull())
@@ -869,7 +883,7 @@ namespace AzQtComponents
                         }
                         break;
 
-                        case SC_SliderGroove:
+                    case SC_SliderGroove:
                         {
                             QRect r = Slider::sliderGrooveRect(this, sliderOption, widget, m_data->sliderConfig);
                             if (!r.isNull())
@@ -879,18 +893,18 @@ namespace AzQtComponents
                         }
                         break;
 
-                        default:
-                            break;
+                    default:
+                        break;
                     }
                 }
             }
             break;
 
-            case CC_SpinBox:
+        case CC_SpinBox:
             {
                 switch (subControl)
                 {
-                    case SC_SpinBoxEditField:
+                case SC_SpinBoxEditField:
                     {
                         QRect r;
                         auto spinBox = qobject_cast<const SpinBox*>(widget);
@@ -913,13 +927,13 @@ namespace AzQtComponents
                     }
                     break;
 
-                    default:
-                        break;
+                default:
+                    break;
                 }
             }
             break;
 
-            case CC_ToolButton:
+        case CC_ToolButton:
             {
                 return ToolButton::subControlRect(this, option, subControl, widget, m_data->toolButtonConfig);
             }
@@ -937,9 +951,9 @@ namespace AzQtComponents
 
         switch (element)
         {
-            case SE_ItemViewItemText:       // intentional fall-through
-            case SE_ItemViewItemDecoration: // intentional fall-through
-            case SE_ItemViewItemFocusRect:
+        case SE_ItemViewItemText: // intentional fall-through
+        case SE_ItemViewItemDecoration: // intentional fall-through
+        case SE_ItemViewItemFocusRect:
             {
                 auto optionItemView = qstyleoption_cast<const QStyleOptionViewItem*>(option);
                 if (qobject_cast<const TableView*>(widget) && optionItemView)
@@ -952,7 +966,7 @@ namespace AzQtComponents
                 }
             }
             break;
-            case SE_LineEditContents:
+        case SE_LineEditContents:
             {
                 QRect r = LineEdit::lineEditContentsRect(this, element, option, widget, m_data->lineEditConfig);
                 if (!r.isNull())
@@ -961,7 +975,7 @@ namespace AzQtComponents
                 }
             }
             break;
-            case SE_TreeViewDisclosureItem:
+        case SE_TreeViewDisclosureItem:
             {
                 auto treeView = static_cast<const QTreeView*>(widget);
                 if (TreeView::isBranchLinesEnabled(treeView) && qobject_cast<BranchDelegate*>(treeView->itemDelegate()))
@@ -977,8 +991,7 @@ namespace AzQtComponents
         return QProxyStyle::subElementRect(element, option, widget);
     }
 
-    int Style::pixelMetric(QStyle::PixelMetric metric, const QStyleOption* option,
-        const QWidget* widget) const
+    int Style::pixelMetric(QStyle::PixelMetric metric, const QStyleOption* option, const QWidget* widget) const
     {
         if (!hasStyle(widget))
         {
@@ -987,7 +1000,7 @@ namespace AzQtComponents
 
         switch (metric)
         {
-            case QStyle::PM_ButtonMargin:
+        case QStyle::PM_ButtonMargin:
             {
                 int margin = ToolButton::buttonMargin(this, option, widget, m_data->toolButtonConfig);
                 if (margin != -1)
@@ -1004,20 +1017,20 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_LayoutLeftMargin:
-            case QStyle::PM_LayoutTopMargin:
-            case QStyle::PM_LayoutRightMargin:
-            case QStyle::PM_LayoutBottomMargin:
-                return 5;
+        case QStyle::PM_LayoutLeftMargin:
+        case QStyle::PM_LayoutTopMargin:
+        case QStyle::PM_LayoutRightMargin:
+        case QStyle::PM_LayoutBottomMargin:
+            return 5;
 
-            case QStyle::PM_LayoutHorizontalSpacing:
-            case QStyle::PM_LayoutVerticalSpacing:
-                return 3;
+        case QStyle::PM_LayoutHorizontalSpacing:
+        case QStyle::PM_LayoutVerticalSpacing:
+            return 3;
 
-            case QStyle::PM_HeaderDefaultSectionSizeVertical:
-                return 24;
+        case QStyle::PM_HeaderDefaultSectionSizeVertical:
+            return 24;
 
-            case QStyle::PM_DefaultFrameWidth:
+        case QStyle::PM_DefaultFrameWidth:
             {
                 if (auto button = qobject_cast<const QToolButton*>(widget))
                 {
@@ -1030,7 +1043,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_ButtonIconSize:
+        case QStyle::PM_ButtonIconSize:
             {
                 int size = ToolButton::buttonIconSize(this, option, widget, m_data->toolButtonConfig);
                 if (size != -1)
@@ -1041,7 +1054,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_ToolBarItemSpacing:
+        case QStyle::PM_ToolBarItemSpacing:
             {
                 int spacing = ToolBar::itemSpacing(this, option, widget, m_data->toolBarConfig);
                 if (spacing != -1)
@@ -1051,12 +1064,12 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_DockWidgetSeparatorExtent:
-                return 3;
-                break;
+        case QStyle::PM_DockWidgetSeparatorExtent:
+            return 3;
+            break;
 
-            case QStyle::PM_SliderThickness:
-            case QStyle::PM_SliderControlThickness: // used by qCommonStyle::subControlRect()
+        case QStyle::PM_SliderThickness:
+        case QStyle::PM_SliderControlThickness: // used by qCommonStyle::subControlRect()
             {
                 int thickness = Slider::sliderThickness(this, option, widget, m_data->sliderConfig);
                 if (thickness != -1)
@@ -1066,7 +1079,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_SliderLength:
+        case QStyle::PM_SliderLength:
             {
                 int length = Slider::sliderLength(this, option, widget, m_data->sliderConfig);
                 if (length != -1)
@@ -1076,7 +1089,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_TitleBarHeight:
+        case QStyle::PM_TitleBarHeight:
             {
                 const int height = TitleBar::titleBarHeight(this, option, widget, m_data->titleBarConfig, m_data->tabWidgetConfig);
                 if (height != -1)
@@ -1086,14 +1099,14 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_TabCloseIndicatorWidth:
-            case QStyle::PM_TabCloseIndicatorHeight:
+        case QStyle::PM_TabCloseIndicatorWidth:
+        case QStyle::PM_TabCloseIndicatorHeight:
             {
                 return TabBar::closeButtonSize(this, option, widget, m_data->tabWidgetConfig);
                 break;
             }
 
-            case QStyle::PM_MenuHMargin:
+        case QStyle::PM_MenuHMargin:
             {
                 const int margin = Menu::horizontalMargin(this, option, widget, m_data->menuConfig);
                 if (margin != -1)
@@ -1103,7 +1116,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_MenuVMargin:
+        case QStyle::PM_MenuVMargin:
             {
                 const int margin = Menu::verticalMargin(this, option, widget, m_data->menuConfig);
                 if (margin != -1)
@@ -1113,7 +1126,8 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_MenuHPlacementOffset:
+#ifndef MESON_BUILD
+        case QStyle::PM_MenuHPlacementOffset:
             {
                 const int hOffset = Menu::horizontalShadowMargin(this, option, widget, m_data->menuConfig);
                 if (hOffset != std::numeric_limits<int>::lowest())
@@ -1123,7 +1137,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_MenuVPlacementOffset:
+        case QStyle::PM_MenuVPlacementOffset:
             {
                 const int vOffset = Menu::verticalShadowMargin(this, option, widget, m_data->menuConfig);
                 if (vOffset != std::numeric_limits<int>::lowest())
@@ -1132,8 +1146,8 @@ namespace AzQtComponents
                 }
                 break;
             }
-
-            case QStyle::PM_MenuButtonIndicator:
+#endif
+        case QStyle::PM_MenuButtonIndicator:
             {
                 int size = ToolButton::menuButtonIndicatorWidth(this, option, widget, m_data->toolButtonConfig);
                 if (size != -1)
@@ -1148,7 +1162,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_SubMenuOverlap:
+        case QStyle::PM_SubMenuOverlap:
             {
                 const int overlap = Menu::subMenuOverlap(this, option, widget, m_data->menuConfig);
                 if (overlap != std::numeric_limits<int>::lowest())
@@ -1158,7 +1172,7 @@ namespace AzQtComponents
                 break;
             }
 
-            case QStyle::PM_ToolBarExtensionExtent:
+        case QStyle::PM_ToolBarExtensionExtent:
             {
                 const QPoint wPos = widget->pos();
                 const QPoint gPos = widget->mapToGlobal(wPos);
@@ -1182,8 +1196,8 @@ namespace AzQtComponents
                 return retval;
             }
 
-            default:
-                break;
+        default:
+            break;
         }
 
         return QProxyStyle::pixelMetric(metric, option, widget);
@@ -1219,7 +1233,8 @@ namespace AzQtComponents
             polishedAlready = polishedAlready || LineEdit::polish(this, widget, m_data->lineEditConfig);
             polishedAlready = polishedAlready || BrowseEdit::polish(this, widget, m_data->browseEditConfig, m_data->lineEditConfig);
             polishedAlready = polishedAlready || ComboBox::polish(this, widget, m_data->comboBoxConfig);
-            polishedAlready = polishedAlready || AssetFolderThumbnailView::polish(this, widget, m_data->scrollBarConfig, m_data->assetFolderThumbnailViewConfig);
+            polishedAlready = polishedAlready ||
+                AssetFolderThumbnailView::polish(this, widget, m_data->scrollBarConfig, m_data->assetFolderThumbnailViewConfig);
             polishedAlready = polishedAlready || FilteredSearchWidget::polish(this, widget, m_data->filteredSearchWidgetConfig);
             polishedAlready = polishedAlready || TableView::polish(this, widget, m_data->scrollBarConfig, m_data->tableViewConfig);
             polishedAlready = polishedAlready || TitleBar::polish(this, widget, m_data->titleBarConfig);
@@ -1294,7 +1309,7 @@ namespace AzQtComponents
 
         switch (standardIcon)
         {
-            case QStyle::SP_LineEditClearButton:
+        case QStyle::SP_LineEditClearButton:
             {
                 const QLineEdit* le = qobject_cast<const QLineEdit*>(widget);
                 if (le)
@@ -1304,19 +1319,19 @@ namespace AzQtComponents
             }
             break;
 
-            case QStyle::SP_MessageBoxInformation:
-                return QIcon(QString::fromUtf8(":/stylesheet/img/UI20/Info.svg"));
-                break;
+        case QStyle::SP_MessageBoxInformation:
+            return QIcon(QString::fromUtf8(":/stylesheet/img/UI20/Info.svg"));
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
         return QProxyStyle::standardIcon(standardIcon, option, widget);
     }
 
     int Style::styleHint(QStyle::StyleHint hint, const QStyleOption* option, const QWidget* widget, QStyleHintReturn* returnData) const
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,1)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 1)
         if (hint == QStyle::SH_SpinBox_StepModifier)
         {
             // This was introduced in 5.12 but we backported it to 5.11
@@ -1366,18 +1381,12 @@ namespace AzQtComponents
         if (borderRadius != CORNER_RECTANGLE)
         {
             const auto radius = borderRadius + borderWidth;
-            pathRect.addRoundedRect(contentsRect.adjusted(borderAdjustment,
-                                        borderAdjustment,
-                                        -borderAdjustment,
-                                        -borderAdjustment),
-                radius, radius);
+            pathRect.addRoundedRect(
+                contentsRect.adjusted(borderAdjustment, borderAdjustment, -borderAdjustment, -borderAdjustment), radius, radius);
         }
         else
         {
-            pathRect.addRect(contentsRect.adjusted(borderAdjustment,
-                borderAdjustment,
-                -borderAdjustment,
-                -borderAdjustment));
+            pathRect.addRect(contentsRect.adjusted(borderAdjustment, borderAdjustment, -borderAdjustment, -borderAdjustment));
         }
 
         return pathRect;
@@ -1389,18 +1398,12 @@ namespace AzQtComponents
 
         if (borderRadius != CORNER_RECTANGLE)
         {
-            pathRect.addRoundedRect(contentsRect.adjusted(borderWidth,
-                                        borderWidth,
-                                        -borderWidth,
-                                        -borderWidth),
-                borderRadius, borderRadius);
+            pathRect.addRoundedRect(
+                contentsRect.adjusted(borderWidth, borderWidth, -borderWidth, -borderWidth), borderRadius, borderRadius);
         }
         else
         {
-            pathRect.addRect(contentsRect.adjusted(borderWidth,
-                borderWidth,
-                -borderWidth,
-                -borderWidth));
+            pathRect.addRect(contentsRect.adjusted(borderWidth, borderWidth, -borderWidth, -borderWidth));
         }
 
         return pathRect;
@@ -1419,17 +1422,20 @@ namespace AzQtComponents
         // Qt::UniqueConnection doesn't work with lambdas, so we have to track this ourselves
 
         QObject::connect(widget, &QObject::destroyed, this, &Style::repolishWidgetDestroyed);
-        QObject::connect(this, &Style::settingsReloaded, widget, [widget]() {
-            widget->style()->unpolish(widget);
-            widget->style()->polish(widget);
-        });
+        QObject::connect(
+            this, &Style::settingsReloaded, widget,
+            [widget]()
+            {
+                widget->style()->unpolish(widget);
+                widget->style()->polish(widget);
+            });
     }
 
     bool Style::eventFilter(QObject* watched, QEvent* ev)
     {
         switch (ev->type())
         {
-            case QEvent::ToolTipChange:
+        case QEvent::ToolTipChange:
             {
                 if (QWidget* w = qobject_cast<QWidget*>(watched))
                 {
@@ -1482,7 +1488,7 @@ namespace AzQtComponents
             const QString classText = buttonClassVariant.toString();
             QStringList classList = classText.split(QRegularExpression("\\s+"));
             bool changed = false;
-            for (int i = classList.count() -1; i >= 0; --i)
+            for (int i = classList.count() - 1; i >= 0; --i)
             {
                 if (classList[i].compare(className, Qt::CaseInsensitive) == 0)
                 {
@@ -1554,8 +1560,8 @@ namespace AzQtComponents
         proxyStyle->setBaseStyle(baseStyle);
         if (baseStyle == applicationStyle)
         {
-            // WORKAROUND: A QProxyStyle over qApp->style() is bad practice as both classes want the ownership over the base style, leading to possible crashes
-            // Ideally all this custom styling should be moved to Style.cpp, as a new "style class"
+            // WORKAROUND: A QProxyStyle over qApp->style() is bad practice as both classes want the ownership over the base style, leading
+            // to possible crashes Ideally all this custom styling should be moved to Style.cpp, as a new "style class"
             applicationStyle->setParent(oldParent); // Restore damage done by QProxyStyle
         }
     }
@@ -1599,4 +1605,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_Style.cpp"
+#endif

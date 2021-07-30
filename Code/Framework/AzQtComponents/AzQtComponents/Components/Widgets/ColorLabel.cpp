@@ -10,8 +10,8 @@
 #include <AzQtComponents/Components/Widgets/ColorPicker.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorHexEdit.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/Swatch.h>
-#include <QHBoxLayout>
 #include <QEvent>
+#include <QHBoxLayout>
 
 namespace AzQtComponents
 {
@@ -72,7 +72,9 @@ namespace AzQtComponents
     {
         if (event->type() == QEvent::MouseButtonRelease)
         {
-            setColor(AzQtComponents::ColorPicker::getColor(AzQtComponents::ColorPicker::Configuration::RGB, m_color, QStringLiteral("Color Picker RGB"), QString(), QStringList(), this));
+            setColor(AzQtComponents::ColorPicker::getColor(
+                AzQtComponents::ColorPicker::Configuration::RGB, m_color, QStringLiteral("Color Picker RGB"), QString(), QStringList(),
+                this));
             return true;
         }
 
@@ -81,7 +83,8 @@ namespace AzQtComponents
 
     void ColorLabel::onHexEditColorChanged()
     {
-        const AZ::Color color(static_cast<float>(m_hexEdit->red()), static_cast<float>(m_hexEdit->green()), static_cast<float>(m_hexEdit->blue()), 1.0f);
+        const AZ::Color color(
+            static_cast<float>(m_hexEdit->red()), static_cast<float>(m_hexEdit->green()), static_cast<float>(m_hexEdit->blue()), 1.0f);
         setColor(color);
     }
 
@@ -96,6 +99,8 @@ namespace AzQtComponents
         m_hexEdit->setGreen(m_color.GetG());
         m_hexEdit->setBlue(m_color.GetB());
     }
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include <Components/Widgets/moc_ColorLabel.cpp>
+#endif

@@ -6,14 +6,14 @@
  *
  */
 
+#include <AzCore/Debug/Trace.h>
+#include <AzCore/std/algorithm.h>
+#include <AzQtComponents/Components/Widgets/Internal/OverlayWidgetLayer.h>
+#include <AzQtComponents/Components/Widgets/OverlayWidget.h>
+#include <QDockWidget>
 #include <QEvent>
 #include <QLayout>
 #include <QMessageBox>
-#include <QDockWidget>
-#include <AzQtComponents/Components/Widgets/OverlayWidget.h>
-#include <AzQtComponents/Components/Widgets/Internal/OverlayWidgetLayer.h>
-#include <AzCore/std/algorithm.h>
-#include <AzCore/Debug/Trace.h>
 
 namespace AzQtComponents
 {
@@ -65,7 +65,12 @@ namespace AzQtComponents
 
     bool OverlayWidget::PopLayer(int layerId)
     {
-        auto it = AZStd::find_if(m_layers.begin(), m_layers.end(), [layerId](const LayerInfo& layer) -> bool { return layer.m_layerId == layerId; });
+        auto it = AZStd::find_if(
+            m_layers.begin(), m_layers.end(),
+            [layerId](const LayerInfo& layer) -> bool
+            {
+                return layer.m_layerId == layerId;
+            });
         AZ_Assert(it != m_layers.end(), "Layer id (%i) is not a valid id for an overlay layer.", layerId);
         return PopLayer(it->m_layer);
     }
@@ -97,7 +102,12 @@ namespace AzQtComponents
 
     void OverlayWidget::RefreshLayer(int layerId)
     {
-        auto it = AZStd::find_if(m_layers.begin(), m_layers.end(), [layerId](const LayerInfo& layer) -> bool { return layer.m_layerId == layerId; });
+        auto it = AZStd::find_if(
+            m_layers.begin(), m_layers.end(),
+            [layerId](const LayerInfo& layer) -> bool
+            {
+                return layer.m_layerId == layerId;
+            });
         AZ_Assert(it != m_layers.end(), "Layer id (%i) is not a valid id for an overlay layer.", layerId);
         it->m_layer->Refresh();
     }
@@ -109,7 +119,12 @@ namespace AzQtComponents
 
     bool OverlayWidget::CanClose() const
     {
-        return AZStd::all_of(m_layers.begin(), m_layers.end(), [](const LayerInfo& entry) -> bool { return entry.m_layer->CanClose(); });
+        return AZStd::all_of(
+            m_layers.begin(), m_layers.end(),
+            [](const LayerInfo& entry) -> bool
+            {
+                return entry.m_layer->CanClose();
+            });
     }
 
     int OverlayWidget::PushLayer(Internal::OverlayWidgetLayer* layer)
@@ -129,7 +144,12 @@ namespace AzQtComponents
 
     bool OverlayWidget::PopLayer(Internal::OverlayWidgetLayer* layer)
     {
-        auto it = AZStd::find_if(m_layers.begin(), m_layers.end(), [layer](const LayerInfo& entry) -> bool { return entry.m_layer == layer; });
+        auto it = AZStd::find_if(
+            m_layers.begin(), m_layers.end(),
+            [layer](const LayerInfo& entry) -> bool
+            {
+                return entry.m_layer == layer;
+            });
         if (it == m_layers.end())
         {
             // Layer has already been removed. This can happen as part of chain of close events, as this would also remove
@@ -174,7 +194,12 @@ namespace AzQtComponents
 
     void OverlayWidget::OnStackEntryRemoved(int index)
     {
-        auto it = AZStd::find_if(m_layers.begin(), m_layers.end(), [index](const LayerInfo& entry) -> bool { return entry.m_layerIndex == index; });
+        auto it = AZStd::find_if(
+            m_layers.begin(), m_layers.end(),
+            [index](const LayerInfo& entry) -> bool
+            {
+                return entry.m_layerIndex == index;
+            });
         if (it == m_layers.end())
         {
             // Layer has already been removed. This can happen as part of chain of close events, as this would also remove
@@ -184,17 +209,19 @@ namespace AzQtComponents
         PopLayer(it->m_layer);
     }
 
-    int OverlayWidget::PushLayerToOverlay(OverlayWidget* overlay, QWidget* centerWidget, QWidget* breakoutWidget,
-        const char* title, const OverlayWidgetButtonList& buttons)
+    int OverlayWidget::PushLayerToOverlay(
+        OverlayWidget* overlay, QWidget* centerWidget, QWidget* breakoutWidget, const char* title, const OverlayWidgetButtonList& buttons)
     {
-        return PushLayer(overlay, new Internal::OverlayWidgetLayer(overlay, centerWidget, breakoutWidget, title, buttons), breakoutWidget != nullptr);
+        return PushLayer(
+            overlay, new Internal::OverlayWidgetLayer(overlay, centerWidget, breakoutWidget, title, buttons), breakoutWidget != nullptr);
     }
 
-    int OverlayWidget::PushLayerToContainingOverlay(QWidget* overlayChild, QWidget* centerWidget, QWidget* breakoutWidget,
-        const char* title, const OverlayWidgetButtonList& buttons)
+    int OverlayWidget::PushLayerToContainingOverlay(
+        QWidget* overlayChild, QWidget* centerWidget, QWidget* breakoutWidget, const char* title, const OverlayWidgetButtonList& buttons)
     {
         OverlayWidget* overlay = GetContainingOverlay(overlayChild);
-        return PushLayer(overlay, new Internal::OverlayWidgetLayer(overlay, centerWidget, breakoutWidget, title, buttons), breakoutWidget != nullptr);
+        return PushLayer(
+            overlay, new Internal::OverlayWidgetLayer(overlay, centerWidget, breakoutWidget, title, buttons), breakoutWidget != nullptr);
     }
 
     OverlayWidget* OverlayWidget::GetContainingOverlay(QWidget* overlayChild)
@@ -231,4 +258,6 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_OverlayWidget.cpp"
+#endif

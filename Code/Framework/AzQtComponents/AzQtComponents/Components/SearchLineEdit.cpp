@@ -10,17 +10,17 @@
 #include <AzQtComponents/Components/SearchLineEdit.h>
 #include <AzQtComponents/Components/Widgets/LineEdit.h>
 
-#include <QIcon>
 #include <QAction>
-#include <QMenu>
 #include <QCompleter>
+#include <QIcon>
+#include <QMenu>
 #include <QStyle>
 
 using namespace AzQtComponents;
 
 SearchLineEdit::SearchLineEdit(QWidget* parent)
-    : QLineEdit(parent),
-      m_errorState(false)
+    : QLineEdit(parent)
+    , m_errorState(false)
 {
     setProperty("class", "SearchLineEdit");
 
@@ -68,13 +68,12 @@ QString SearchLineEdit::userInputText() const
     // 2) If they don't match, it means that user deleted something, and the Completer didn't update it's internal state, so we'll just
     // use whatever is in the text box.
     //
-    // 3) When the text field is set to empty, the current completion gets invalidated, but the prefix doesn't, so that gets special cased out.
+    // 3) When the text field is set to empty, the current completion gets invalidated, but the prefix doesn't, so that gets special cased
+    // out.
     //
-    // Extra fun: If you type in something, "Like" then delete a middle character, "Lie", and then put the k back in. It will auto complete the E
-    // visually but the completion prefix will be the entire word.
-    if (completer()
-        && completer()->currentCompletion().compare(lineEditText, Qt::CaseInsensitive) == 0
-        && !lineEditText.isEmpty())
+    // Extra fun: If you type in something, "Like" then delete a middle character, "Lie", and then put the k back in. It will auto complete
+    // the E visually but the completion prefix will be the entire word.
+    if (completer() && completer()->currentCompletion().compare(lineEditText, Qt::CaseInsensitive) == 0 && !lineEditText.isEmpty())
     {
         lineEditText = completer()->completionPrefix();
     }
@@ -99,10 +98,12 @@ void SearchLineEdit::displayMenu()
 {
     if (m_menu)
     {
-        const auto rect = QRect(0,0, width(), height());
+        const auto rect = QRect(0, 0, width(), height());
         const auto actionSelected = m_menu->exec(mapToGlobal(rect.bottomLeft()));
         emit menuEntryClicked(actionSelected);
     }
 }
 
+#ifndef MESON_BUILD
 #include "Components/moc_SearchLineEdit.cpp"
+#endif

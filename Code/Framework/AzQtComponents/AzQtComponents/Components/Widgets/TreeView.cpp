@@ -9,12 +9,12 @@
 #include <AzQtComponents/Components/Widgets/TreeView.h>
 
 #include <QEvent>
-#include <QSettings>
 #include <QPainter>
+#include <QSettings>
 
+#include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <AzQtComponents/Components/ConfigHelpers.h>
 
 #include <QtWidgets/private/qstylesheetstyle_p.h>
 
@@ -22,8 +22,7 @@ namespace AzQtComponents
 {
     constexpr const char* g_branchLinesEnabledProperty = "BranchLinesEnabled";
 
-    class TreeViewWatcher
-        : public QObject
+    class TreeViewWatcher : public QObject
     {
     public:
         TreeViewWatcher(QObject* parent = nullptr)
@@ -37,13 +36,15 @@ namespace AzQtComponents
             {
                 switch (event->type())
                 {
-                    case QEvent::DynamicPropertyChange:
+                case QEvent::DynamicPropertyChange:
                     {
                         auto widget = qobject_cast<QWidget*>(obj);
                         auto styleSheet = StyleManager::styleSheetStyle(widget);
                         if (styleSheet)
                         {
+#ifndef MESON_BUILD
                             styleSheet->repolish(widget);
+#endif
                         }
                         widget->update();
                         break;
@@ -61,7 +62,7 @@ namespace AzQtComponents
         {
             return false;
         }
-        const auto *model = treeView->model();
+        const auto* model = treeView->model();
         Q_ASSERT(model);
         if (model->hasChildren(parent))
         {
@@ -77,7 +78,7 @@ namespace AzQtComponents
         return false;
     }
 
-    bool BranchDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex &index)
+    bool BranchDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)
     {
         auto copy = option;
         if (auto treeView = qobject_cast<const QTreeView*>(option.styleObject))
@@ -162,7 +163,8 @@ namespace AzQtComponents
         }
     }
 
-    bool TreeView::drawBranchIndicator(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool TreeView::drawBranchIndicator(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         auto treeView = qobject_cast<const QTreeView*>(widget);
         if (!(treeView && !qobject_cast<const TableView*>(widget)) || !qobject_cast<BranchDelegate*>(treeView->itemDelegate()))
@@ -205,19 +207,19 @@ namespace AzQtComponents
 
             switch (option->state & (QStyle::State_Sibling | QStyle::State_Item))
             {
-                case QStyle::State_Sibling:
-                    painter->drawLine(centerX, top, centerX, bottom);
-                    break;
+            case QStyle::State_Sibling:
+                painter->drawLine(centerX, top, centerX, bottom);
+                break;
 
-                case QStyle::State_Sibling | QStyle::State_Item:
-                    painter->drawLine(centerX, top, centerX, bottom);
-                    painter->drawLine(centerX, centerY, right, centerY);
-                    break;
+            case QStyle::State_Sibling | QStyle::State_Item:
+                painter->drawLine(centerX, top, centerX, bottom);
+                painter->drawLine(centerX, centerY, right, centerY);
+                break;
 
-                case QStyle::State_Item:
-                    painter->drawLine(centerX, top, centerX, centerY);
-                    painter->drawLine(centerX, centerY, right, centerY);
-                    break;
+            case QStyle::State_Item:
+                painter->drawLine(centerX, top, centerX, centerY);
+                painter->drawLine(centerX, centerY, right, centerY);
+                break;
             }
 
             painter->restore();
@@ -253,4 +255,6 @@ namespace AzQtComponents
     }
 
 } // namespace AzQtComponents
+#ifndef MESON_BUILD
 #include <Components/Widgets/moc_TreeView.cpp>
+#endif

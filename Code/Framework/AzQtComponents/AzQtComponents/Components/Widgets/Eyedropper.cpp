@@ -6,24 +6,23 @@
  *
  */
 
-#include <QToolButton>
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <QPainter>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPainter>
 #include <QSettings>
+#include <QToolButton>
 
-#include <AzQtComponents/Components/Widgets/Eyedropper.h>
-#include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/ConfigHelpers.h>
-#include <AzQtComponents/Utilities/QtWindowUtilities.h>
+#include <AzQtComponents/Components/Style.h>
+#include <AzQtComponents/Components/Widgets/Eyedropper.h>
 #include <AzQtComponents/Utilities/MouseHider.h>
+#include <AzQtComponents/Utilities/QtWindowUtilities.h>
 #include <AzQtComponents/Utilities/ScreenGrabber.h>
 
 namespace AzQtComponents
 {
-
     Eyedropper::Config Eyedropper::loadConfig(QSettings& settings)
     {
         Config config = defaultConfig();
@@ -38,7 +37,7 @@ namespace AzQtComponents
     {
         return {
             15, // contextSizeInPixels
-            8   // zoomFactor
+            8 // zoomFactor
         };
     }
 
@@ -73,11 +72,12 @@ namespace AzQtComponents
 
     bool Eyedropper::eventFilter(QObject*, QEvent* event)
     {
-        switch (event->type()) {
-            case QEvent::MouseMove:
-                handleMouseMove();
-                return true;
-            case QEvent::MouseButtonRelease:
+        switch (event->type())
+        {
+        case QEvent::MouseMove:
+            handleMouseMove();
+            return true;
+        case QEvent::MouseButtonRelease:
             {
                 QMouseEvent* mouse = static_cast<QMouseEvent*>(event);
                 if (!mouse->buttons().testFlag(Qt::LeftButton))
@@ -87,16 +87,16 @@ namespace AzQtComponents
                     return true;
                 }
             }
-            case QEvent::KeyPress:
-                handleKeyPress(static_cast<QKeyEvent*>(event));
-                return true;
-            default:
-                break;
+        case QEvent::KeyPress:
+            handleKeyPress(static_cast<QKeyEvent*>(event));
+            return true;
+        default:
+            break;
         }
         return false;
     }
 
-    void Eyedropper::showEvent(QShowEvent *event)
+    void Eyedropper::showEvent(QShowEvent* event)
     {
         m_mouseHider.reset(new MouseHider(this));
         m_grabber.reset(new ScreenGrabber(QSize{ m_sampleSize, m_sampleSize }, this));
@@ -134,16 +134,16 @@ namespace AzQtComponents
 
         for (int x = m_zoomFactor; x < m_size; x += m_zoomFactor)
         {
-            painter.drawLine(QPoint{x, 0}, QPoint{x, m_size});
+            painter.drawLine(QPoint{ x, 0 }, QPoint{ x, m_size });
         }
 
         for (int y = m_zoomFactor; y < m_size; y += m_zoomFactor)
         {
-            painter.drawLine(QPoint{0, y}, QPoint{m_size, y});
+            painter.drawLine(QPoint{ 0, y }, QPoint{ m_size, y });
         }
 
         pen.setCosmetic(false);
-        
+
         // Draw the border of the hovered pixel
         QColor highlight = m_color.lightness() > 127 ? Qt::black : Qt::white;
         QColor lowlight = m_color.lightness() > 127 ? Qt::white : Qt::black;
@@ -156,13 +156,17 @@ namespace AzQtComponents
 
         // Draw color information
         QString text = QString("R:%1 G:%2 B:%3 A:%4 %5")
-                .arg(m_color.red()).arg(m_color.green()).arg(m_color.blue()).arg(m_color.alpha()).arg(m_color.name(QColor::HexRgb).toUpper());
+                           .arg(m_color.red())
+                           .arg(m_color.green())
+                           .arg(m_color.blue())
+                           .arg(m_color.alpha())
+                           .arg(m_color.name(QColor::HexRgb).toUpper());
 
         const QFont font = painter.font();
         QFontMetrics metrics(font);
         QRect textBounds = metrics.boundingRect(text);
-        textBounds += QMargins{3, 3, 3, 3};
-        textBounds.moveCenter(QPoint{ m_centerOffset, m_centerOffset + textBounds.height()});
+        textBounds += QMargins{ 3, 3, 3, 3 };
+        textBounds.moveCenter(QPoint{ m_centerOffset, m_centerOffset + textBounds.height() });
 
         QPainterPath box;
         box.addRoundedRect(textBounds, 1.0, 1.0);
@@ -244,4 +248,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_Eyedropper.cpp"
+#endif

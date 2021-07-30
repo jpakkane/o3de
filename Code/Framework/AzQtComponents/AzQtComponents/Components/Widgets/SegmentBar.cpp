@@ -9,11 +9,11 @@
 
 #include <AzQtComponents/Components/Style.h>
 
-#include <QIcon>
+#include <QApplication>
 #include <QBoxLayout>
 #include <QButtonGroup>
+#include <QIcon>
 #include <QPushButton>
-#include <QApplication>
 
 namespace AzQtComponents
 {
@@ -21,10 +21,8 @@ namespace AzQtComponents
     {
         const Qt::LayoutDirection direction = widget->layoutDirection();
         return direction == Qt::LayoutDirectionAuto
-                ? (widget->parentWidget()
-                   ? layoutDirectionIsLeftToRight(widget->parentWidget())
-                   : QApplication::isLeftToRight())
-                : direction == Qt::LeftToRight;
+            ? (widget->parentWidget() ? layoutDirectionIsLeftToRight(widget->parentWidget()) : QApplication::isLeftToRight())
+            : direction == Qt::LeftToRight;
     }
 
     QBoxLayout::Direction boxLayoutDirection(Qt::Orientation orientation, QWidget* widget)
@@ -53,13 +51,13 @@ namespace AzQtComponents
     {
         switch (m_buttonsLayout->direction())
         {
-            case QBoxLayout::LeftToRight:
-            case QBoxLayout::RightToLeft:
-                return Qt::Horizontal;
-            case QBoxLayout::TopToBottom:
-            case QBoxLayout::BottomToTop:
-            default:
-                return Qt::Vertical;
+        case QBoxLayout::LeftToRight:
+        case QBoxLayout::RightToLeft:
+            return Qt::Horizontal;
+        case QBoxLayout::TopToBottom:
+        case QBoxLayout::BottomToTop:
+        default:
+            return Qt::Vertical;
         }
     }
 
@@ -118,11 +116,11 @@ namespace AzQtComponents
             updateTabs();
             if (isCurrent)
             {
-                setCurrentIndex(count() > 0 ? qBound(0, index -1, count() -1) : -1);
+                setCurrentIndex(count() > 0 ? qBound(0, index - 1, count() - 1) : -1);
             }
             else if (curIndex > index)
             {
-                setCurrentIndex(curIndex -1);
+                setCurrentIndex(curIndex - 1);
             }
         }
     }
@@ -296,19 +294,21 @@ namespace AzQtComponents
 
         setOrientation(orientation);
 
-        connect(m_buttons, static_cast<void(QButtonGroup::*)(QAbstractButton*)>(&QButtonGroup::buttonClicked),
-                this, [this](QAbstractButton* btn)
+        connect(
+            m_buttons, static_cast<void (QButtonGroup::*)(QAbstractButton*)>(&QButtonGroup::buttonClicked), this,
+            [this](QAbstractButton* btn)
+            {
+                emit tabBarClicked(m_buttonsLayout->indexOf(btn));
+            });
+        connect(
+            m_buttons, static_cast<void (QButtonGroup::*)(QAbstractButton*, bool)>(&QButtonGroup::buttonToggled), this,
+            [this](QAbstractButton* btn, bool checked)
+            {
+                if (checked)
                 {
-                    emit tabBarClicked(m_buttonsLayout->indexOf(btn));
-                });
-        connect(m_buttons, static_cast<void(QButtonGroup::*)(QAbstractButton*, bool)>(&QButtonGroup::buttonToggled),
-                this, [this](QAbstractButton* btn, bool checked)
-                {
-                    if (checked)
-                    {
-                        emit currentChanged(m_buttonsLayout->indexOf(btn));
-                    }
-                });
+                    emit currentChanged(m_buttonsLayout->indexOf(btn));
+                }
+            });
     }
 
     void SegmentBar::updateTabs()
@@ -379,6 +379,8 @@ namespace AzQtComponents
         QLayoutItem* item = m_buttonsLayout->itemAt(index);
         return item ? qobject_cast<QAbstractButton*>(item->widget()) : nullptr;
     }
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_SegmentBar.cpp"
+#endif

@@ -14,7 +14,10 @@
 namespace AzQtComponents
 {
     StyledDialog::StyledDialog(QWidget* parent, Qt::WindowFlags f)
-        : QDialog(new WindowDecorationWrapper(WindowDecorationWrapper::OptionAutoAttach |  WindowDecorationWrapper::OptionAutoTitleBarButtons, parent), f)
+        : QDialog(
+              new WindowDecorationWrapper(
+                  WindowDecorationWrapper::OptionAutoAttach | WindowDecorationWrapper::OptionAutoTitleBarButtons, parent),
+              f)
     {
     }
 
@@ -40,4 +43,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyledDialog.cpp"
+#endif

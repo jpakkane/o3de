@@ -6,10 +6,10 @@
  *
  */
 
-#include <AzQtComponents/Components/DockBarButton.h>
 #include <AzQtComponents/Components/ConfigHelpers.h>
-#include <AzQtComponents/Components/Widgets/TabWidget.h>
+#include <AzQtComponents/Components/DockBarButton.h>
 #include <AzQtComponents/Components/Style.h>
+#include <AzQtComponents/Components/Widgets/TabWidget.h>
 
 #include <QApplication>
 #include <QStyleOptionToolButton>
@@ -62,24 +62,24 @@ namespace AzQtComponents
         Style::addClass(this, NoMargins);
         switch (m_buttonType)
         {
-            case DockBarButton::CloseButton:
-                Style::addClass(this, QStringLiteral("close"));
-                break;
-            case DockBarButton::MaximizeButton:
-                Style::addClass(this, QStringLiteral("maximize"));
-                break;
-            case DockBarButton::MinimizeButton:
-                Style::addClass(this, QStringLiteral("minimize"));
-                break;
-            case DockBarButton::DividerButton:
-                break;
+        case DockBarButton::CloseButton:
+            Style::addClass(this, QStringLiteral("close"));
+            break;
+        case DockBarButton::MaximizeButton:
+            Style::addClass(this, QStringLiteral("maximize"));
+            break;
+        case DockBarButton::MinimizeButton:
+            Style::addClass(this, QStringLiteral("minimize"));
+            break;
+        case DockBarButton::DividerButton:
+            break;
         }
 
         if (m_isDarkStyle)
         {
             Style::addClass(this, QStringLiteral("dark"));
         }
-        
+
         // Handle when our button is clicked
         QObject::connect(this, &QToolButton::clicked, this, &DockBarButton::handleButtonClick);
 
@@ -88,7 +88,7 @@ namespace AzQtComponents
         setFocusPolicy(Qt::ClickFocus);
     }
 
-    void DockBarButton::paintEvent(QPaintEvent *)
+    void DockBarButton::paintEvent(QPaintEvent*)
     {
         QStylePainter p(this);
         QStyleOptionToolButton option;
@@ -102,17 +102,17 @@ namespace AzQtComponents
         // of the pixmap in the style sheet.
         switch (m_buttonType)
         {
-            case DockBarButton::CloseButton:
-                option.icon = style()->standardIcon(QStyle::SP_TitleBarCloseButton, &option, this);
-                break;
-            case DockBarButton::MaximizeButton:
-                option.icon = style()->standardIcon(QStyle::SP_TitleBarMaxButton, &option, this);
-                break;
-            case DockBarButton::MinimizeButton:
-                option.icon = style()->standardIcon(QStyle::SP_TitleBarMinButton, &option, this);
-                break;
-            default:
-                break;
+        case DockBarButton::CloseButton:
+            option.icon = style()->standardIcon(QStyle::SP_TitleBarCloseButton, &option, this);
+            break;
+        case DockBarButton::MaximizeButton:
+            option.icon = style()->standardIcon(QStyle::SP_TitleBarMaxButton, &option, this);
+            break;
+        case DockBarButton::MinimizeButton:
+            option.icon = style()->standardIcon(QStyle::SP_TitleBarMinButton, &option, this);
+            break;
+        default:
+            break;
         }
 
         p.drawComplexControl(QStyle::CC_ToolButton, option);
@@ -131,7 +131,8 @@ namespace AzQtComponents
         emit buttonPressed(m_buttonType);
     }
 
-    bool DockBarButton::drawDockBarButton(const Style* style, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool DockBarButton::drawDockBarButton(
+        const Style* style, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         auto dockBarButton = qobject_cast<const DockBarButton*>(widget);
         auto buttonOption = qstyleoption_cast<const QStyleOptionToolButton*>(option);
@@ -179,7 +180,6 @@ namespace AzQtComponents
                 {
                     painter->setBrush(config.hoverBackgroundColor);
                 }
-                
             }
 
             const QRect highlightRect = buttonOption->rect;
@@ -196,4 +196,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_DockBarButton.cpp"
+#endif

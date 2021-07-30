@@ -9,8 +9,8 @@
 #include "SegmentBar.h"
 
 #include <QBoxLayout>
-#include <QStackedLayout>
 #include <QIcon>
+#include <QStackedLayout>
 
 namespace AzQtComponents
 {
@@ -56,13 +56,13 @@ namespace AzQtComponents
     {
         switch (m_layout->direction())
         {
-            case QBoxLayout::LeftToRight:
-            case QBoxLayout::RightToLeft:
-                return m_layout->indexOf(m_segmentBar) == 0 ? SegmentControl::West : SegmentControl::East;
-            case QBoxLayout::TopToBottom:
-            case QBoxLayout::BottomToTop:
-            default:
-                return m_layout->indexOf(m_segmentBar) == 0 ? SegmentControl::North : SegmentControl::South;
+        case QBoxLayout::LeftToRight:
+        case QBoxLayout::RightToLeft:
+            return m_layout->indexOf(m_segmentBar) == 0 ? SegmentControl::West : SegmentControl::East;
+        case QBoxLayout::TopToBottom:
+        case QBoxLayout::BottomToTop:
+        default:
+            return m_layout->indexOf(m_segmentBar) == 0 ? SegmentControl::North : SegmentControl::South;
         }
     }
 
@@ -239,10 +239,13 @@ namespace AzQtComponents
 
         setTabPosition(position);
 
-        connect(m_segmentBar, &SegmentBar::currentChanged, this, [this](int index) {
-            m_widgets->setCurrentIndex(index);
-            emit currentChanged(index);
-        });
+        connect(
+            m_segmentBar, &SegmentBar::currentChanged, this,
+            [this](int index)
+            {
+                m_widgets->setCurrentIndex(index);
+                emit currentChanged(index);
+            });
         connect(m_segmentBar, &SegmentBar::tabBarClicked, this, &SegmentControl::tabBarClicked);
     }
 
@@ -256,6 +259,8 @@ namespace AzQtComponents
     {
         return m_widgets->indexOf(widget);
     }
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_SegmentControl.cpp"
+#endif

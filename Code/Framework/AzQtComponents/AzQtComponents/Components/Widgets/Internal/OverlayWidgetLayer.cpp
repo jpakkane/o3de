@@ -6,36 +6,43 @@
  *
  */
 
-
-#include <AzQtComponents/Components/Widgets/Internal/OverlayWidgetLayer.h>
-#include <AzQtComponents/Components/StyledDialog.h>
-#include <AzQtComponents/Components/WindowDecorationWrapper.h>
-#include <AzQtComponents/Components/Titlebar.h>
-#include <QEvent>
-#include <QPushButton>
-#include <QMessageBox>
 #include <AzCore/Casting/numeric_cast.h>
+#include <AzQtComponents/Components/StyledDialog.h>
+#include <AzQtComponents/Components/Titlebar.h>
+#include <AzQtComponents/Components/Widgets/Internal/OverlayWidgetLayer.h>
+#include <AzQtComponents/Components/WindowDecorationWrapper.h>
+#include <QEvent>
+#include <QMessageBox>
+#include <QPushButton>
+#ifdef MESON_BUILD
+#include <ui_OverlayWidgetLayer.h>
+#else
 #include <AzQtComponents/Components/Widgets/Internal/ui_OverlayWidgetLayer.h>
+#endif
 #include <AzCore/Debug/Trace.h>
 
 namespace AzQtComponents
 {
     namespace
     {
-        QWidget *topmostAncestor(QWidget *w)
+        QWidget* topmostAncestor(QWidget* w)
         {
             while (w->parentWidget())
                 w = w->parentWidget();
             return w;
         }
-    }
+    } // namespace
 
     namespace Internal
     {
         const char* OverlayWidgetLayer::s_layerStyle = "background-color:rgba(0, 0, 0, 179)";
 
-        OverlayWidgetLayer::OverlayWidgetLayer(OverlayWidget* parent, QWidget* centerWidget, QWidget* breakoutWidget, 
-            const char* title, const OverlayWidgetButtonList& buttons)
+        OverlayWidgetLayer::OverlayWidgetLayer(
+            OverlayWidget* parent,
+            QWidget* centerWidget,
+            QWidget* breakoutWidget,
+            const char* title,
+            const OverlayWidgetButtonList& buttons)
             : QFrame(parent)
             , m_ui(new Ui::OverlayWidgetLayer())
             , m_parent(parent)
@@ -63,12 +70,12 @@ namespace AzQtComponents
                     m_breakoutDialog = nullptr;
                 }
             };
-                
+
             if (breakoutWidget)
             {
                 setStyleSheet(s_layerStyle);
                 setLayout(new QHBoxLayout());
-                
+
                 // close the overlay if either dependent widget is destroyed
                 QObject::connect(breakoutWidget, &QObject::destroyed, this, closeBreakoutDialog);
 
@@ -187,16 +194,18 @@ namespace AzQtComponents
                     m_breakoutCloseButtonIndex = aznumeric_caster(m_buttons.size());
                     m_buttons.push_back({ nullptr, info->m_callback, info->m_enabledCheck, true });
                 }
-                    
+
                 QPushButton* button = new QPushButton(info->m_text);
                 size_t index = m_buttons.size();
                 m_buttons.push_back({ button, info->m_callback, info->m_enabledCheck, info->m_triggersPop });
 
                 // pass "this" as a context object so that the connection is properly torn down if the OverlayWidgetLayer is destroyed
-                connect(button, &QPushButton::clicked, this, [this, index]()
-                {
-                    ButtonClicked(index);
-                });
+                connect(
+                    button, &QPushButton::clicked, this,
+                    [this, index]()
+                    {
+                        ButtonClicked(index);
+                    });
                 widget.m_controlsLayout->addWidget(button);
                 if (info->m_enabledCheck)
                 {
@@ -260,4 +269,6 @@ namespace AzQtComponents
     } // namespace Internal
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/Internal/moc_OverlayWidgetLayer.cpp"
+#endif

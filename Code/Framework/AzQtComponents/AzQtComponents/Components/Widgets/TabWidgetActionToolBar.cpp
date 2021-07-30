@@ -20,7 +20,7 @@ namespace AzQtComponents
     {
         setLayout(new QHBoxLayout(this));
         setAttribute(Qt::WA_StyledBackground, true);
-        layout()->setContentsMargins({0, 0, 0, 0});
+        layout()->setContentsMargins({ 0, 0, 0, 0 });
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     }
 
@@ -32,49 +32,49 @@ namespace AzQtComponents
             QActionEvent* actionEvent;
             QAction* action;
 
-            case QEvent::ActionAdded:
-                actionEvent = static_cast<QActionEvent*>(event);
-                actionButton = new QToolButton(this);
-                action = actionEvent->action();
-                actionButton->setIcon(action->icon());
-                actionButton->setToolTip(action->text());
-                if (!action->objectName().isEmpty())
-                {
-                    actionButton->setObjectName(action->objectName());
-                }
+        case QEvent::ActionAdded:
+            actionEvent = static_cast<QActionEvent*>(event);
+            actionButton = new QToolButton(this);
+            action = actionEvent->action();
+            actionButton->setIcon(action->icon());
+            actionButton->setToolTip(action->text());
+            if (!action->objectName().isEmpty())
+            {
+                actionButton->setObjectName(action->objectName());
+            }
 
-                // If the action has a menu, we need to configure the QToolButton appropriately
-                if (action->menu())
-                {
-                    actionButton->setAutoRaise(true);
-                    actionButton->setPopupMode(QToolButton::InstantPopup);
-                    actionButton->setMenu(action->menu());
-                }
+            // If the action has a menu, we need to configure the QToolButton appropriately
+            if (action->menu())
+            {
+                actionButton->setAutoRaise(true);
+                actionButton->setPopupMode(QToolButton::InstantPopup);
+                actionButton->setMenu(action->menu());
+            }
 
-                // Forcing styled background to allow using background-color from QSS
-                actionButton->setAttribute(Qt::WA_StyledBackground, true);
-                layout()->addWidget(actionButton);
-                connect(actionButton, &QToolButton::clicked, action, &QAction::trigger);
-                m_actionButtons[action] = actionButton;
-                emit actionsChanged();
-                return true;
-            case QEvent::ActionChanged:
-                actionEvent = static_cast<QActionEvent*>(event);
-                actionButton = m_actionButtons[actionEvent->action()];
-                if (actionButton)
-                {
-                    actionButton->setIcon(actionEvent->action()->icon());
-                    actionButton->setText(actionEvent->action()->text());
-                }
-                return true;
-            case QEvent::ActionRemoved:
-                actionEvent = static_cast<QActionEvent*>(event);
-                removeWidgetFromLayout(m_actionButtons[actionEvent->action()]);
-                m_actionButtons.remove(actionEvent->action());
-                emit actionsChanged();
-                return true;
-            default:
-                return QObject::eventFilter(watched, event);
+            // Forcing styled background to allow using background-color from QSS
+            actionButton->setAttribute(Qt::WA_StyledBackground, true);
+            layout()->addWidget(actionButton);
+            connect(actionButton, &QToolButton::clicked, action, &QAction::trigger);
+            m_actionButtons[action] = actionButton;
+            emit actionsChanged();
+            return true;
+        case QEvent::ActionChanged:
+            actionEvent = static_cast<QActionEvent*>(event);
+            actionButton = m_actionButtons[actionEvent->action()];
+            if (actionButton)
+            {
+                actionButton->setIcon(actionEvent->action()->icon());
+                actionButton->setText(actionEvent->action()->text());
+            }
+            return true;
+        case QEvent::ActionRemoved:
+            actionEvent = static_cast<QActionEvent*>(event);
+            removeWidgetFromLayout(m_actionButtons[actionEvent->action()]);
+            m_actionButtons.remove(actionEvent->action());
+            emit actionsChanged();
+            return true;
+        default:
+            return QObject::eventFilter(watched, event);
         }
     }
 
@@ -100,4 +100,6 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_TabWidgetActionToolBar.cpp"
+#endif

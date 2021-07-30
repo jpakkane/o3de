@@ -9,13 +9,16 @@
 #include <AzQtComponents/Components/StyledBusyLabel.h>
 
 #include <QLabel>
-AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option") // 4251: 'QImageIOHandler::d_ptr': class 'QScopedPointer<QImageIOHandlerPrivate,QScopedPointerDeleter<T>>' needs to have dll-interface to be used by clients of class 'QImageIOHandler'
+AZ_PUSH_DISABLE_WARNING(
+    4244 4251,
+    "-Wunknown-warning-option") // 4251: 'QImageIOHandler::d_ptr': class 'QScopedPointer<QImageIOHandlerPrivate,QScopedPointerDeleter<T>>'
+                                // needs to have dll-interface to be used by clients of class 'QImageIOHandler'
 #include <QMovie>
 AZ_POP_DISABLE_WARNING
-#include <QSvgWidget>
-#include <QSvgRenderer>
 #include <QHBoxLayout>
 #include <QPainter>
+#include <QSvgRenderer>
+#include <QSvgWidget>
 
 namespace AzQtComponents
 {
@@ -217,4 +220,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyledBusyLabel.cpp"
+#endif

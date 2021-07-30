@@ -9,9 +9,9 @@
 #include <AzCore/std/containers/vector.h>
 #include <AzCore/std/sort.h>
 
+#include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Widgets/TabWidget.h>
 #include <AzQtComponents/Components/Widgets/TabWidgetActionToolBar.h>
 
@@ -117,17 +117,17 @@ namespace AzQtComponents
     TabWidget::Config TabWidget::defaultConfig()
     {
         return {
-            QPixmap(),  // TearIcon
-            3,          // TearIconLeftPadding
-            30,         // TabHeight 28 + 1 (top margin) + 1 (bottom margin)
-            16,         // MinimumTabWidth
-            16,         // CloseButtonSize
-            40,         // TextRightPadding
-            4,          // CloseButtonRightPadding
-            32,         // CloseButtonMinTabWidth
-            96,         // ToolTipTabWidthThreshold
-            true,       // ShowOverflowMenu
-            24          // OverflowSpacing
+            QPixmap(), // TearIcon
+            3, // TearIconLeftPadding
+            30, // TabHeight 28 + 1 (top margin) + 1 (bottom margin)
+            16, // MinimumTabWidth
+            16, // CloseButtonSize
+            40, // TextRightPadding
+            4, // CloseButtonRightPadding
+            32, // CloseButtonMinTabWidth
+            96, // ToolTipTabWidthThreshold
+            true, // ShowOverflowMenu
+            24 // OverflowSpacing
         };
     }
 
@@ -360,14 +360,18 @@ namespace AzQtComponents
         for (QToolButton* p : m_actionToolBar->m_actionButtons)
         {
             int idx = m_actionToolBar->layout()->indexOf(p);
-            if (idx >= 0 && p) {
-                buttons.push_back({idx, p});
+            if (idx >= 0 && p)
+            {
+                buttons.push_back({ idx, p });
             }
         }
 
-        AZStd::sort(buttons.begin(), buttons.end(), [](const QPair<int, QWidget*>& p1, const QPair<int, QWidget*>& p2) {
-            return p1.first < p2.first;
-        });
+        AZStd::sort(
+            buttons.begin(), buttons.end(),
+            [](const QPair<int, QWidget*>& p1, const QPair<int, QWidget*>& p2)
+            {
+                return p1.first < p2.first;
+            });
 
         // set tab order: tabbar -> actionbtn1 -> actionbtn2 ...
         for (int i = 0; i < buttons.size(); i++)
@@ -378,7 +382,7 @@ namespace AzQtComponents
             }
             else
             {
-                setTabOrder(buttons[i-1].second, buttons[i].second);
+                setTabOrder(buttons[i - 1].second, buttons[i].second);
             }
         }
     }
@@ -423,7 +427,7 @@ namespace AzQtComponents
         icon = QIcon(QStringLiteral(":/Cursors/Grabbing.svg"));
         m_dragCursor = QCursor(icon.pixmap(16), 5, 2);
 
-        this->setCursor(m_hoverCursor);                                  
+        this->setCursor(m_hoverCursor);
     }
 
     void TabBar::setHandleOverflow(bool handleOverflow)
@@ -506,13 +510,15 @@ namespace AzQtComponents
             // position.
             // This only pauses any custom close button or tool tip visualization logic during the animation.
             // Formula for animation duration taken from QTabBar::mouseReleaseEvent()
-            auto animationDuration = (g_releaseTabMaxAnimationDuration * qAbs(mouseEvent->pos().x() - m_lastMousePress.x())) /
-                                     tabRect(currentIndex()).width();
-            QTimer::singleShot(animationDuration, [this]() {
-                m_movingTab = false;
-                update();
-            });
-
+            auto animationDuration =
+                (g_releaseTabMaxAnimationDuration * qAbs(mouseEvent->pos().x() - m_lastMousePress.x())) / tabRect(currentIndex()).width();
+            QTimer::singleShot(
+                animationDuration,
+                [this]()
+                {
+                    m_movingTab = false;
+                    update();
+                });
         }
 
         QTabBar::mouseReleaseEvent(mouseEvent);
@@ -636,7 +642,7 @@ namespace AzQtComponents
         for (int i = 0; i < count(); i++)
         {
             QWidget* tabBtn = tabButton(i, closeSide);
-            
+
             if (tabBtn)
             {
                 bool shouldShow = (i == index);
@@ -723,7 +729,8 @@ namespace AzQtComponents
         return config.closeButtonSize;
     }
 
-    bool TabBar::drawTabBarTabLabel(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const TabWidget::Config& config)
+    bool TabBar::drawTabBarTabLabel(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const TabWidget::Config& config)
     {
         const QStyleOptionTab* tabOption = qstyleoption_cast<const QStyleOptionTab*>(option);
 
@@ -744,8 +751,7 @@ namespace AzQtComponents
             painter->save();
             const QRect tearIconRectangle(
                 option->rect.left() + config.tearIconLeftPadding + g_borderWidth,
-                option->rect.top() + (option->rect.height() - config.tearIcon.height()) / 2,
-                config.tearIcon.width(),
+                option->rect.top() + (option->rect.height() - config.tearIcon.height()) / 2, config.tearIcon.width(),
                 config.tearIcon.height());
             style->baseStyle()->drawItemPixmap(painter, tearIconRectangle, 0, config.tearIcon);
             painter->restore();
@@ -765,7 +771,7 @@ namespace AzQtComponents
             }
 
             textRect.setSize(textRect.size() + widthExtension);
-            
+
             QString labelText = painter->fontMetrics().elidedText(tabOption->text, Qt::ElideRight, textRect.width());
             painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, labelText);
         }
@@ -778,7 +784,13 @@ namespace AzQtComponents
         return true;
     }
 
-    QSize TabBar::sizeFromContents(const Style* style, QStyle::ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget, const TabWidget::Config& config)
+    QSize TabBar::sizeFromContents(
+        const Style* style,
+        QStyle::ContentsType type,
+        const QStyleOption* option,
+        const QSize& contentsSize,
+        const QWidget* widget,
+        const TabWidget::Config& config)
     {
         const QStyleOptionTab* tabOption = qstyleoption_cast<const QStyleOptionTab*>(option);
 
@@ -835,4 +847,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_TabWidget.cpp"
+#endif

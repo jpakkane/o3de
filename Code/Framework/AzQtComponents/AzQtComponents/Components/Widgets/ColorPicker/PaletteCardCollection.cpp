@@ -6,16 +6,15 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/ColorPicker/PaletteCardCollection.h>
+#include <AzCore/Casting/numeric_cast.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorController.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/PaletteCard.h>
+#include <AzQtComponents/Components/Widgets/ColorPicker/PaletteCardCollection.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/PaletteView.h>
-#include <AzCore/Casting/numeric_cast.h>
 #include <QVBoxLayout>
 
 namespace AzQtComponents
 {
-
     PaletteCardCollection::PaletteCardCollection(Internal::ColorController* colorController, QUndoStack* undoStack, QWidget* parent)
         : QWidget(parent)
         , m_colorController(colorController)
@@ -55,15 +54,24 @@ namespace AzQtComponents
         // which with undo/redo, can be more than you ever want it to.
         if (m_registeredPaletteCards.find(card.data()) == m_registeredPaletteCards.end())
         {
-            connect(card.data(), &PaletteCard::removeClicked, this, [this, card] {
-                emit removePaletteClicked(card);
-            });
-            connect(card.data(), &PaletteCard::saveClicked, this, [this, card] {
-                emit savePaletteClicked(card);
-            });
-            connect(card.data(), &PaletteCard::saveAsClicked, this, [this, card] {
-                emit savePaletteAsClicked(card);
-            });
+            connect(
+                card.data(), &PaletteCard::removeClicked, this,
+                [this, card]
+                {
+                    emit removePaletteClicked(card);
+                });
+            connect(
+                card.data(), &PaletteCard::saveClicked, this,
+                [this, card]
+                {
+                    emit savePaletteClicked(card);
+                });
+            connect(
+                card.data(), &PaletteCard::saveAsClicked, this,
+                [this, card]
+                {
+                    emit savePaletteAsClicked(card);
+                });
 
             connect(card.data(), &QObject::destroyed, this, &PaletteCardCollection::paletteCardDestroyed);
 
@@ -210,9 +218,12 @@ namespace AzQtComponents
     {
         const auto paletteNameExists = [this, card](const QString& name)
         {
-            auto it = std::find_if(m_paletteCards.begin(), m_paletteCards.end(),
+            auto it = std::find_if(
+                m_paletteCards.begin(), m_paletteCards.end(),
                 [&name](QSharedPointer<const PaletteCard> card)
-            { return name == card->title(); });
+                {
+                    return name == card->title();
+                });
             return it != m_paletteCards.end();
         };
 
@@ -221,8 +232,12 @@ namespace AzQtComponents
             return name;
         }
 
-        auto lastDigit = std::find_if(name.rbegin(), name.rend(),
-            [](const QChar ch) { return !ch.isDigit(); });
+        auto lastDigit = std::find_if(
+            name.rbegin(), name.rend(),
+            [](const QChar ch)
+            {
+                return !ch.isDigit();
+            });
         const QString baseName = name.left(aznumeric_cast<int>(std::distance(name.begin(), lastDigit.base())));
 
         int lastNumber = 1;
@@ -246,4 +261,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/ColorPicker/moc_PaletteCardCollection.cpp"
+#endif

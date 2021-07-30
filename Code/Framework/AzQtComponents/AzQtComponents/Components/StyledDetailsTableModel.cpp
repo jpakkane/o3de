@@ -90,7 +90,7 @@ namespace AzQtComponents
         InternalTableEntry internalEntry;
         for (const auto& t : entry.m_entries)
         {
-            internalEntry.push_back({t.first, t.second});
+            internalEntry.push_back({ t.first, t.second });
         }
 
         const auto sortColName = GetColumnName(m_sortColumn);
@@ -160,7 +160,7 @@ namespace AzQtComponents
         }
 
         const auto aliases = m_columnAliases.keys(column);
-        for (const auto& alias: aliases)
+        for (const auto& alias : aliases)
         {
             const auto aliasMatch = [&alias](const StyledDetailsTableModel::InternalTableData& data)
             {
@@ -177,9 +177,11 @@ namespace AzQtComponents
         return {};
     }
 
-    bool StyledDetailsTableModel::AppearsAbove(const StyledDetailsTableModel::InternalTableEntry* lhs,
-                                        const StyledDetailsTableModel::InternalTableEntry* rhs,
-                                        const QString& column, Qt::SortOrder order) const
+    bool StyledDetailsTableModel::AppearsAbove(
+        const StyledDetailsTableModel::InternalTableEntry* lhs,
+        const StyledDetailsTableModel::InternalTableEntry* rhs,
+        const QString& column,
+        Qt::SortOrder order) const
     {
         const auto lhsVal = GetEntryData(lhs, column);
         const auto rhsVal = GetEntryData(rhs, column);
@@ -265,7 +267,7 @@ namespace AzQtComponents
 
         if (role == StyledDetailsTableModel::HasOnlyDetails)
         {
-            for (const auto& col: m_columns)
+            for (const auto& col : m_columns)
             {
                 if (GetEntryData(entry, col.name).isValid())
                 {
@@ -283,9 +285,10 @@ namespace AzQtComponents
                 if (GetColumnIndex(it->key) == -1)
                 {
                     QString line = QString("%1 - %2").arg(it->key, it->value.toString());
-                    (m_prioritizedKeys.contains(it->key) ? prioritized
-                        : m_deprioritizedKeys.contains(it->key) ? deprioritized
-                        : normal).append(line);
+                    (m_prioritizedKeys.contains(it->key)         ? prioritized
+                         : m_deprioritizedKeys.contains(it->key) ? deprioritized
+                                                                 : normal)
+                        .append(line);
                 }
             }
             return (prioritized + normal + deprioritized).join(QStringLiteral("\n"));
@@ -293,19 +296,19 @@ namespace AzQtComponents
 
         switch (column.style)
         {
-            case TextString:
-                if (role == Qt::DisplayRole)
-                {
-                    return GetEntryData(entry, column.name);
-                }
-                break;
-            case StatusIcon:
-                if (role == Qt::DecorationRole)
-                {
-                    int statusType = GetEntryData(entry, column.name).toInt();
-                    return m_statusIcons[statusType];
-                }
-                break;
+        case TextString:
+            if (role == Qt::DisplayRole)
+            {
+                return GetEntryData(entry, column.name);
+            }
+            break;
+        case StatusIcon:
+            if (role == Qt::DecorationRole)
+            {
+                int statusType = GetEntryData(entry, column.name).toInt();
+                return m_statusIcons[statusType];
+            }
+            break;
         }
         return {};
     }
@@ -333,4 +336,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyledDetailsTableModel.cpp"
+#endif

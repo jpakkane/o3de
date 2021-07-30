@@ -6,16 +6,15 @@
  *
  */
 
-#include <AzQtComponents/Components/DockTabWidget.h>
 #include <AzQtComponents/Components/DockTabBar.h>
-#include <AzQtComponents/Components/StyledDockWidget.h>
+#include <AzQtComponents/Components/DockTabWidget.h>
 #include <AzQtComponents/Components/RepolishMinimizer.h>
+#include <AzQtComponents/Components/StyledDockWidget.h>
 
 #include <QContextMenuEvent>
 #include <QDockWidget>
 #include <QStackedWidget>
 #include <QString>
-
 
 namespace AzQtComponents
 {
@@ -55,8 +54,9 @@ namespace AzQtComponents
         }
 
         // Set an empty QWidget as the custom title bar to hide it, since our tab widget will drive it's own custom tab bar
-        // that will replace it (the empty QWidget is parented to the dock widget, so it will be cleaned up whenever the dock widget is deleted).
-        // We can't just set a nullptr because the QDockWidget will install a default title bar instead of leaving it empty, which is what we want.
+        // that will replace it (the empty QWidget is parented to the dock widget, so it will be cleaned up whenever the dock widget is
+        // deleted). We can't just set a nullptr because the QDockWidget will install a default title bar instead of leaving it empty, which
+        // is what we want.
         page->setTitleBarWidget(new QWidget());
 
         // Let the QTabWidget handle the rest
@@ -73,14 +73,17 @@ namespace AzQtComponents
         }
 
         // Make sure that changes to the window title get reflected by the tab too
-        m_titleBarChangedConnections[page] = connect(page, &QWidget::windowTitleChanged, this, [this, page]() {
-            // have to find this widget in the list, since the index might have changed
-            int tabIndex = indexOf(page);
-            if (tabIndex != -1)
+        m_titleBarChangedConnections[page] = connect(
+            page, &QWidget::windowTitleChanged, this,
+            [this, page]()
             {
-                setTabText(tabIndex, page->windowTitle());
-            }
-        });
+                // have to find this widget in the list, since the index might have changed
+                int tabIndex = indexOf(page);
+                if (tabIndex != -1)
+                {
+                    setTabText(tabIndex, page->windowTitle());
+                }
+            });
 
         return tab;
     }
@@ -198,7 +201,8 @@ namespace AzQtComponents
     }
 
     /**
-     * Emit our tab count changed signal whenever a tab is removed (we use this elsewhere to handle tearing down the tab widget when no tabs are left)
+     * Emit our tab count changed signal whenever a tab is removed (we use this elsewhere to handle tearing down the tab widget when no tabs
+     * are left)
      */
     void DockTabWidget::tabRemoved(int index)
     {
@@ -250,7 +254,7 @@ namespace AzQtComponents
     /**
      * Handle clicks in the tab bar. Will only pick up clicks in the black, unoccupied area.
      */
-    void DockTabWidget::mousePressEvent(QMouseEvent *event)
+    void DockTabWidget::mousePressEvent(QMouseEvent* event)
     {
         if (event->button() == Qt::MouseButton::LeftButton && event->pos().y() <= m_tabBar->height())
         {
@@ -329,4 +333,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_DockTabWidget.cpp"
+#endif

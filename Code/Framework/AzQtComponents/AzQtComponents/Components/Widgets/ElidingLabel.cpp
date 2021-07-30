@@ -119,7 +119,7 @@ namespace AzQtComponents
     {
         // Override the QLabel minimumSizeHint width to let other
         // widgets know we can deal with less space.
-        return QWidget::minimumSizeHint().boundedTo({0, std::numeric_limits<int>::max()});
+        return QWidget::minimumSizeHint().boundedTo({ 0, std::numeric_limits<int>::max() });
     }
 
     QSize ElidingLabel::sizeHint() const
@@ -138,7 +138,6 @@ namespace AzQtComponents
         m_filterString = filter;
         m_filterRegex = QRegExp(m_filterString, Qt::CaseInsensitive);
     }
-
 
     void ElidingLabel::paintEvent(QPaintEvent* event)
     {
@@ -163,7 +162,7 @@ namespace AzQtComponents
 
             int leftSpot = textRect.left() + preSelectedTextLength;
 
-            // Only need to do the draw if we actually are going to be highlighting the text.                
+            // Only need to do the draw if we actually are going to be highlighting the text.
             if (leftSpot < textRect.right())
             {
                 int visibleLength = AZStd::GetMin(selectedTextLength, textRect.right() - leftSpot);
@@ -180,4 +179,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_ElidingLabel.cpp"
+#endif

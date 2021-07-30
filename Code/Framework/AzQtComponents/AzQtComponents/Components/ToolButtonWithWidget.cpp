@@ -7,11 +7,11 @@
  */
 #include <AzQtComponents/Components/ToolButtonWithWidget.h>
 
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QSizePolicy>
-#include <QToolButton>
 #include <QToolBar>
-#include <QEvent>
+#include <QToolButton>
 
 namespace AzQtComponents
 {
@@ -33,13 +33,12 @@ namespace AzQtComponents
         layout->addWidget(m_button);
         layout->addWidget(m_widget);
         m_button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-        setFixedWidth(m_iconSize.height()* WidthProportionButton);
+        setFixedWidth(m_iconSize.height() * WidthProportionButton);
         layout->addSpacing(4);
         connect(m_button, &QAbstractButton::clicked, this, &ToolButtonWithWidget::clicked);
 
         connectToParentToolBar();
     }
-
 
     QSize ToolButtonWithWidget::sizeHint() const
     {
@@ -52,16 +51,14 @@ namespace AzQtComponents
         setIconSize(m_iconSize);
     }
 
-    void ToolButtonWithWidget::setIconSize(const QSize &iconSize)
+    void ToolButtonWithWidget::setIconSize(const QSize& iconSize)
     {
         if (!iconSize.isValid())
         {
             return;
         }
 
-        m_iconSize = iconSize.height() + ButtonIconMargin < ButtonHeightMin
-            ? QSize(ButtonHeightMin, ButtonHeightMin)
-            : iconSize;
+        m_iconSize = iconSize.height() + ButtonIconMargin < ButtonHeightMin ? QSize(ButtonHeightMin, ButtonHeightMin) : iconSize;
 
         const int newHeight = m_iconSize.height() + ButtonIconMargin;
         setFixedHeight(newHeight);
@@ -82,7 +79,7 @@ namespace AzQtComponents
         return m_widget;
     }
 
-    bool ToolButtonWithWidget::event(QEvent *event)
+    bool ToolButtonWithWidget::event(QEvent* event)
     {
         if (event->type() == QEvent::ParentChange)
         {
@@ -103,4 +100,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_ToolButtonWithWidget.cpp"
+#endif

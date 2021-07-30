@@ -13,9 +13,10 @@ namespace AzQtComponents
     ButtonDivider::ButtonDivider(QWidget* parent)
         : QFrame(parent)
     {
-
     }
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_ButtonDivider.cpp"
+#endif

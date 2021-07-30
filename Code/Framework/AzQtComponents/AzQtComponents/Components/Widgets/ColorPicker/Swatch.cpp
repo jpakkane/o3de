@@ -6,20 +6,19 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/ColorPicker/Swatch.h>
 #include <AzQtComponents/Components/Style.h>
+#include <AzQtComponents/Components/Widgets/ColorPicker/Swatch.h>
 #include <AzQtComponents/Utilities/ColorUtilities.h>
 #include <AzQtComponents/Utilities/Conversions.h>
 
-#include <QPaintEvent>
-#include <QStylePainter>
-#include <QStyleOption>
 #include <QImage>
+#include <QPaintEvent>
 #include <QPainter>
+#include <QStyleOption>
+#include <QStylePainter>
 
 namespace AzQtComponents
 {
-
     Swatch::Swatch(QWidget* parent /* = nullptr */)
         : Swatch({}, parent)
     {
@@ -67,7 +66,7 @@ namespace AzQtComponents
         painter->setPen(Qt::NoPen);
         painter->fillRect(contentsRect(), MakeAlphaBrush(ToQColor(m_color)));
         style()->drawPrimitive(QStyle::PE_Frame, option, painter, this);
-        
+
         painter->restore();
         return true;
     }
@@ -84,4 +83,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/ColorPicker/moc_Swatch.cpp"
+#endif

@@ -9,9 +9,12 @@
 
 #include <AzQtComponents/Components/Style.h>
 
-AZ_PUSH_DISABLE_WARNING(4244 4251 4800, "-Wunknown-warning-option") // 4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-                                                                    // 4251: 'QInputEvent::modState': class 'QFlags<Qt::KeyboardModifier>' needs to have dll-interface to be used by clients of class 'QInputEvent'
-                                                                    // 4800: 'QFlags<QPainter::RenderHint>::Int': forcing value to bool 'true' or 'false' (performance warning)
+AZ_PUSH_DISABLE_WARNING(
+    4244 4251 4800,
+    "-Wunknown-warning-option") // 4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+                                // 4251: 'QInputEvent::modState': class 'QFlags<Qt::KeyboardModifier>' needs to have dll-interface to be
+                                // used by clients of class 'QInputEvent' 4800: 'QFlags<QPainter::RenderHint>::Int': forcing value to bool
+                                // 'true' or 'false' (performance warning)
 #include <QAbstractItemDelegate>
 #include <QMouseEvent>
 #include <QPainter>
@@ -26,7 +29,7 @@ namespace
         if (fm.horizontalAdvance(text) <= width)
             return text;
 
-        const int dot = text.lastIndexOf(QLatin1Char{'.'});
+        const int dot = text.lastIndexOf(QLatin1Char{ '.' });
         if (dot != -1)
         {
             const auto baseName = text.left(dot);
@@ -38,11 +41,12 @@ namespace
             return fm.elidedText(text, Qt::ElideRight, width);
         }
     }
-}
+} // namespace
 
 namespace AzQtComponents
 {
-    static void paintExpandButton(QPainter* painter, const QRect& rect, bool closed, const AssetFolderThumbnailView::Config::ExpandButton& config)
+    static void paintExpandButton(
+        QPainter* painter, const QRect& rect, bool closed, const AssetFolderThumbnailView::Config::ExpandButton& config)
     {
         // rectangle
 
@@ -54,14 +58,14 @@ namespace AzQtComponents
         // caret
 
         const auto caretWidth = config.caretWidth;
-        const auto center = QRectF{buttonRect}.center();
+        const auto center = QRectF{ buttonRect }.center();
 
         const auto caretDirection = closed ? 1.0 : -1.0;
 
         QPolygonF caret;
-        caret.append(center + QPointF{-.5f * caretWidth * caretDirection, -caretWidth});
-        caret.append(center + QPointF{-.5f * caretWidth * caretDirection, caretWidth});
-        caret.append(center + QPointF{.5f * caretWidth * caretDirection, 0});
+        caret.append(center + QPointF{ -.5f * caretWidth * caretDirection, -caretWidth });
+        caret.append(center + QPointF{ -.5f * caretWidth * caretDirection, caretWidth });
+        caret.append(center + QPointF{ .5f * caretWidth * caretDirection, 0 });
 
         painter->setBrush(config.caretColor);
         painter->drawConvexPolygon(caret);
@@ -100,21 +104,22 @@ namespace AzQtComponents
         const auto padding = config.padding;
         const auto& rect = option.rect;
 
-        const auto thumbnailRect = QRect{rect.left(), rect.top(), rect.width(), rect.width()};
+        const auto thumbnailRect = QRect{ rect.left(), rect.top(), rect.width(), rect.width() };
         const auto imageRect = thumbnailRect.adjusted(padding, padding, -padding, -padding);
 
         // border
 
         const auto halfBorderThickness = qMax(config.borderThickness, config.selectedBorderThickness) / 2;
-        const auto borderRect = QRectF{thumbnailRect}.adjusted(halfBorderThickness, halfBorderThickness, -halfBorderThickness, -halfBorderThickness);
+        const auto borderRect =
+            QRectF{ thumbnailRect }.adjusted(halfBorderThickness, halfBorderThickness, -halfBorderThickness, -halfBorderThickness);
         QPen borderPen;
         if (option.state & QStyle::State_Selected)
         {
-            borderPen = {config.selectedBorderColor, config.selectedBorderThickness};
+            borderPen = { config.selectedBorderColor, config.selectedBorderThickness };
         }
         else
         {
-            borderPen = {config.borderColor, config.borderThickness};
+            borderPen = { config.borderColor, config.borderThickness };
         }
         painter->setBrush(config.backgroundColor);
         painter->setPen(borderPen);
@@ -137,17 +142,19 @@ namespace AzQtComponents
             {
                 const auto& buttonConfig = m_config.expandButton;
                 const auto width = buttonConfig.width;
-                const auto buttonRect = QRect{rect.left() + rect.width() - width, rect.top(), width, rect.width()};
+                const auto buttonRect = QRect{ rect.left() + rect.width() - width, rect.top(), width, rect.width() };
                 paintExpandButton(painter, buttonRect, (option.state & QStyle::State_DownArrow) != 0, buttonConfig);
             }
 
             // text
 
             const auto textHeight = option.fontMetrics.height();
-            const auto textRect = QRect{rect.left(), rect.bottom() - textHeight, rect.width(), textHeight};
+            const auto textRect = QRect{ rect.left(), rect.bottom() - textHeight, rect.width(), textHeight };
 
             painter->setPen(option.palette.color(QPalette::Text));
-            painter->drawText(textRect, elidedTextWithExtension(option.fontMetrics, index.data().toString(), textRect.width()), QTextOption{option.decorationAlignment});
+            painter->drawText(
+                textRect, elidedTextWithExtension(option.fontMetrics, index.data().toString(), textRect.width()),
+                QTextOption{ option.decorationAlignment });
         }
 
         painter->restore();
@@ -182,7 +189,8 @@ namespace AzQtComponents
         thumbnail.padding = settings.value(QStringLiteral("Padding"), thumbnail.padding).toInt();
         readColor(settings, "BackgroundColor", thumbnail.backgroundColor);
         thumbnail.borderThickness = settings.value(QStringLiteral("BorderThickness"), thumbnail.borderThickness).toReal();
-        thumbnail.selectedBorderThickness = settings.value(QStringLiteral("SelectedBorderThickness"), thumbnail.selectedBorderThickness).toReal();
+        thumbnail.selectedBorderThickness =
+            settings.value(QStringLiteral("SelectedBorderThickness"), thumbnail.selectedBorderThickness).toReal();
         readColor(settings, "BorderColor", thumbnail.borderColor);
         readColor(settings, "SelectedBorderColor", thumbnail.selectedBorderColor);
     }
@@ -324,11 +332,14 @@ namespace AzQtComponents
             return {};
         }
 
-        const auto p = point + QPoint{horizontalOffset(), verticalOffset()};
+        const auto p = point + QPoint{ horizontalOffset(), verticalOffset() };
 
-        const auto it = std::find_if(m_itemGeometry.constBegin(), m_itemGeometry.constEnd(), [&p](const QRect& rect) {
-            return rect.contains(p);
-        });
+        const auto it = std::find_if(
+            m_itemGeometry.constBegin(), m_itemGeometry.constEnd(),
+            [&p](const QRect& rect)
+            {
+                return rect.contains(p);
+            });
         if (it != m_itemGeometry.end())
         {
             return it.key();
@@ -354,40 +365,40 @@ namespace AzQtComponents
 
         switch (hint)
         {
-            case EnsureVisible:
-                if (horizontalOffset() > rect.right())
-                {
-                    horizontalScrollBar()->setValue(rect.left());
-                }
-                else if ((horizontalOffset() + viewport()->width()) < rect.left())
-                {
-                    horizontalScrollBar()->setValue(rect.right() - viewport()->width());
-                }
-
-                if (verticalOffset() > rect.bottom())
-                {
-                    verticalScrollBar()->setValue(rect.top());
-                }
-                else if ((verticalOffset() + viewport()->height()) < rect.top())
-                {
-                    verticalScrollBar()->setValue(rect.bottom() - viewport()->height());
-                }
-                break;
-
-            case PositionAtTop:
+        case EnsureVisible:
+            if (horizontalOffset() > rect.right())
+            {
                 horizontalScrollBar()->setValue(rect.left());
-                verticalScrollBar()->setValue(rect.top());
-                break;
-
-            case PositionAtBottom:
+            }
+            else if ((horizontalOffset() + viewport()->width()) < rect.left())
+            {
                 horizontalScrollBar()->setValue(rect.right() - viewport()->width());
-                verticalScrollBar()->setValue(rect.bottom() - viewport()->height());
-                break;
+            }
 
-            case PositionAtCenter:
-                horizontalScrollBar()->setValue(rect.center().x() - (viewport()->width() / 2));
-                verticalScrollBar()->setValue(rect.center().y() - (viewport()->height() / 2));
-                break;
+            if (verticalOffset() > rect.bottom())
+            {
+                verticalScrollBar()->setValue(rect.top());
+            }
+            else if ((verticalOffset() + viewport()->height()) < rect.top())
+            {
+                verticalScrollBar()->setValue(rect.bottom() - viewport()->height());
+            }
+            break;
+
+        case PositionAtTop:
+            horizontalScrollBar()->setValue(rect.left());
+            verticalScrollBar()->setValue(rect.top());
+            break;
+
+        case PositionAtBottom:
+            horizontalScrollBar()->setValue(rect.right() - viewport()->width());
+            verticalScrollBar()->setValue(rect.bottom() - viewport()->height());
+            break;
+
+        case PositionAtCenter:
+            horizontalScrollBar()->setValue(rect.center().x() - (viewport()->width() / 2));
+            verticalScrollBar()->setValue(rect.center().y() - (viewport()->height() / 2));
+            break;
         }
     }
 
@@ -425,13 +436,13 @@ namespace AzQtComponents
 
         switch (cursorAction)
         {
-            case MoveHome:
-                return model()->index(0, 0, rootIndex());
+        case MoveHome:
+            return model()->index(0, 0, rootIndex());
 
-            case MoveEnd:
-                return model()->index(rowCount - 1, 0, rootIndex());
+        case MoveEnd:
+            return model()->index(rowCount - 1, 0, rootIndex());
 
-            case MovePrevious:
+        case MovePrevious:
             {
                 const auto current = currentIndex();
                 if (current.isValid())
@@ -441,7 +452,7 @@ namespace AzQtComponents
             }
             break;
 
-            case MoveNext:
+        case MoveNext:
             {
                 const auto current = currentIndex();
                 if (current.isValid())
@@ -451,14 +462,14 @@ namespace AzQtComponents
             }
             break;
 
-            case MoveUp:
-            case MoveDown:
-            case MoveLeft:
-            case MoveRight:
-            case MovePageUp:
-            case MovePageDown:
-                // TODO
-                break;
+        case MoveUp:
+        case MoveDown:
+        case MoveLeft:
+        case MoveRight:
+        case MovePageUp:
+        case MovePageDown:
+            // TODO
+            break;
         }
 
         return {};
@@ -522,7 +533,7 @@ namespace AzQtComponents
             updateGeometries();
         }
 
-        QPainter painter{viewport()};
+        QPainter painter{ viewport() };
         painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
         painter.setBackground(palette().window());
         painter.setFont(font());
@@ -559,7 +570,7 @@ namespace AzQtComponents
 
                     const auto textHeight = fontMetrics().height();
                     const auto textWidth = rect.width() - 2 * m_config.childFrame.padding;
-                    const auto textRect = QRect{rect.left() + m_config.childFrame.padding, rect.top(), textWidth, textHeight};
+                    const auto textRect = QRect{ rect.left() + m_config.childFrame.padding, rect.top(), textWidth, textHeight };
 
                     painter->setPen(palette().color(QPalette::Text));
                     painter->drawText(textRect, fontMetrics().elidedText(title, Qt::ElideRight, textRect.width()));
@@ -573,7 +584,7 @@ namespace AzQtComponents
             const auto& lastRect = childFrame.rects.last();
             const auto& buttonConfig = m_config.expandButton;
             const auto width = buttonConfig.width;
-            const auto buttonRect = QRect{lastRect.left() + lastRect.width() - width, lastRect.top(), width, lastRect.height()};
+            const auto buttonRect = QRect{ lastRect.left() + lastRect.width() - width, lastRect.top(), width, lastRect.height() };
             paintExpandButton(painter, buttonRect, false, buttonConfig);
         }
     }
@@ -586,7 +597,7 @@ namespace AzQtComponents
         option.fontMetrics = fontMetrics();
         option.decorationAlignment = Qt::AlignCenter;
 
-        const QRect visibleRect{QPoint{horizontalOffset(), verticalOffset()}, viewport()->contentsRect().size()};
+        const QRect visibleRect{ QPoint{ horizontalOffset(), verticalOffset() }, viewport()->contentsRect().size() };
 
         for (auto it = m_itemGeometry.constBegin(); it != m_itemGeometry.constEnd(); ++it)
         {
@@ -621,21 +632,24 @@ namespace AzQtComponents
 
     void AssetFolderThumbnailView::mousePressEvent(QMouseEvent* event)
     {
-        const auto p = event->pos() + QPoint{horizontalOffset(), verticalOffset()};
+        const auto p = event->pos() + QPoint{ horizontalOffset(), verticalOffset() };
 
         // check the expand/collapse buttons on one of the top level items was clicked
 
         {
-            auto it = std::find_if(m_itemGeometry.keyBegin(), m_itemGeometry.keyEnd(), [this, &p](const QModelIndex& index) {
-                if (isExpandable(index))
+            auto it = std::find_if(
+                m_itemGeometry.keyBegin(), m_itemGeometry.keyEnd(),
+                [this, &p](const QModelIndex& index)
                 {
-                    const auto& rect = m_itemGeometry.value(index);
-                    const auto width = m_config.expandButton.width;
-                    const auto buttonRect = QRect{rect.left() + rect.width() - width, rect.top(), width, rect.width()};
-                    return buttonRect.contains(p);
-                }
-                return false;
-            });
+                    if (isExpandable(index))
+                    {
+                        const auto& rect = m_itemGeometry.value(index);
+                        const auto width = m_config.expandButton.width;
+                        const auto buttonRect = QRect{ rect.left() + rect.width() - width, rect.top(), width, rect.width() };
+                        return buttonRect.contains(p);
+                    }
+                    return false;
+                });
             if (it != m_itemGeometry.keyEnd())
             {
                 const auto row = it->row();
@@ -655,12 +669,15 @@ namespace AzQtComponents
         // check the collapse button on one of the child frames was clicked
 
         {
-            auto it = std::find_if(m_childFrames.begin(), m_childFrames.end(), [this, &p](const ChildFrame& childFrame) {
-                const auto& rect = childFrame.rects.last();
-                const auto width = m_config.expandButton.width;
-                const auto buttonRect = QRect{rect.left() + rect.width() - width, rect.top(), width, rect.width()};
-                return buttonRect.contains(p);
-            });
+            auto it = std::find_if(
+                m_childFrames.begin(), m_childFrames.end(),
+                [this, &p](const ChildFrame& childFrame)
+                {
+                    const auto& rect = childFrame.rects.last();
+                    const auto width = m_config.expandButton.width;
+                    const auto buttonRect = QRect{ rect.left() + rect.width() - width, rect.top(), width, rect.width() };
+                    return buttonRect.contains(p);
+                });
             if (it != m_childFrames.end())
             {
                 const auto row = it->index.row();
@@ -680,12 +697,12 @@ namespace AzQtComponents
     {
         switch (m_thumbnailSize)
         {
-            case ThumbnailSize::Small:
-                return m_config.rootThumbnail.smallSize;
-            case ThumbnailSize::Medium:
-                return m_config.rootThumbnail.mediumSize;
-            case ThumbnailSize::Large:
-                return m_config.rootThumbnail.largeSize;
+        case ThumbnailSize::Small:
+            return m_config.rootThumbnail.smallSize;
+        case ThumbnailSize::Medium:
+            return m_config.rootThumbnail.mediumSize;
+        case ThumbnailSize::Large:
+            return m_config.rootThumbnail.largeSize;
         }
         Q_UNREACHABLE();
     }
@@ -694,12 +711,12 @@ namespace AzQtComponents
     {
         switch (m_thumbnailSize)
         {
-            case ThumbnailSize::Small:
-                return m_config.childThumbnail.smallSize;
-            case ThumbnailSize::Medium:
-                return m_config.childThumbnail.mediumSize;
-            case ThumbnailSize::Large:
-                return m_config.childThumbnail.largeSize;
+        case ThumbnailSize::Small:
+            return m_config.childThumbnail.smallSize;
+        case ThumbnailSize::Medium:
+            return m_config.childThumbnail.mediumSize;
+        case ThumbnailSize::Large:
+            return m_config.childThumbnail.largeSize;
         }
         Q_UNREACHABLE();
     }
@@ -721,13 +738,13 @@ namespace AzQtComponents
         }
 
         const auto rootThumbnailSize = rootThumbnailSizeInPixels();
-        const QSize itemSize{rootThumbnailSize, rootThumbnailSize + 4 + fontMetrics().height()};
+        const QSize itemSize{ rootThumbnailSize, rootThumbnailSize + 4 + fontMetrics().height() };
 
         const int viewportWidth = viewport()->width() - m_config.margin;
         const int rowHeight = itemSize.height() + m_config.margin;
 
         const auto childThumbnailSize = childThumbnailSizeInPixels();
-        const QSize childItemSize{childThumbnailSize, childThumbnailSize};
+        const QSize childItemSize{ childThumbnailSize, childThumbnailSize };
 
         const int childItemYOffset = (rootThumbnailSize - childThumbnailSize) / 2;
 
@@ -745,7 +762,7 @@ namespace AzQtComponents
             // add item geometry
 
             const auto index = model()->index(row, 0, rootIndex());
-            m_itemGeometry[index] = {QPoint{x, y}, itemSize};
+            m_itemGeometry[index] = { QPoint{ x, y }, itemSize };
             x += itemSize.width() + m_config.margin;
 
             // add child items and frames if item is expanded
@@ -753,15 +770,17 @@ namespace AzQtComponents
             const auto childRowCount = model()->rowCount(index);
             if (childRowCount && m_expandedRows.contains(row))
             {
-                ChildFrame childFrame{index};
+                ChildFrame childFrame{ index };
 
                 auto& childFrameRects = childFrame.rects;
 
-                const auto addChildFrame = [this, &childFrameRects, childItemYOffset, childThumbnailSize](int frameLeft, int frameRight, int yRow) {
+                const auto addChildFrame =
+                    [this, &childFrameRects, childItemYOffset, childThumbnailSize](int frameLeft, int frameRight, int yRow)
+                {
                     const auto top = yRow + childItemYOffset - m_config.childFrame.padding;
                     const auto width = frameRight - frameLeft + m_config.childFrame.padding;
                     const auto height = childThumbnailSize + 2 * m_config.childFrame.padding;
-                    childFrameRects.append({frameLeft, top, width, height});
+                    childFrameRects.append({ frameLeft, top, width, height });
                 };
 
                 auto frameLeft = x;
@@ -781,7 +800,7 @@ namespace AzQtComponents
                     }
 
                     const auto childIndex = model()->index(childRow, 0, index);
-                    m_itemGeometry[childIndex] = {QPoint{x, y + childItemYOffset}, childItemSize};
+                    m_itemGeometry[childIndex] = { QPoint{ x, y + childItemYOffset }, childItemSize };
                     x += childItemSize.width() + m_config.margin;
                 }
                 addChildFrame(frameLeft, x - m_config.margin, y);
@@ -795,6 +814,8 @@ namespace AzQtComponents
         verticalScrollBar()->setPageStep(viewport()->height());
         verticalScrollBar()->setRange(0, y + rowHeight - viewport()->height());
     }
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_AssetFolderThumbnailView.cpp"
+#endif

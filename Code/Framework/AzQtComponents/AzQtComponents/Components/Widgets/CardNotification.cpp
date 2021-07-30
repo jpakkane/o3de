@@ -7,10 +7,10 @@
  */
 #include <AzQtComponents/Components/Widgets/CardNotification.h>
 
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 namespace AzQtComponents
 {
@@ -62,6 +62,7 @@ namespace AzQtComponents
         return featureButton;
     }
 
-    #include <Components/Widgets/moc_CardNotification.cpp>
-}
-
+#ifndef MESON_BUILD
+#include <Components/Widgets/moc_CardNotification.cpp>
+#endif
+} // namespace AzQtComponents

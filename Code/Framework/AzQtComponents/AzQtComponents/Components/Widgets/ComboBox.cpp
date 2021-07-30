@@ -6,10 +6,10 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/ComboBox.h>
+#include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <AzQtComponents/Components/ConfigHelpers.h>
+#include <AzQtComponents/Components/Widgets/ComboBox.h>
 
 AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option")
 #include <QAbstractItemView>
@@ -101,9 +101,10 @@ namespace AzQtComponents
                 QStyleOptionComboBox opt;
                 opt.subControls &= QStyle::SC_ComboBoxArrow;
                 auto arrowButtonRect = cb->style()->subControlRect(QStyle::CC_ComboBox, &opt, QStyle::SC_ComboBoxArrow, cb);
-                QRect widgetGeometry(QPoint(
-                    rect.width() - g_errorBorderWidth - errorToolButton->width() - arrowButtonRect.width() - m_config.errorImageSpacing,
-                    (rect.height() - errorToolButton->height()) / 2),
+                QRect widgetGeometry(
+                    QPoint(
+                        rect.width() - g_errorBorderWidth - errorToolButton->width() - arrowButtonRect.width() - m_config.errorImageSpacing,
+                        (rect.height() - errorToolButton->height()) / 2),
                     errorToolButton->size());
                 errorToolButton->setGeometry(widgetGeometry);
             }
@@ -123,28 +124,30 @@ namespace AzQtComponents
             {
                 switch (event->type())
                 {
-                    case QEvent::Show:
+                case QEvent::Show:
                     {
                         // Need to check validity also for the preselected item
                         updateErrorState(cbWidget);
                     }
                     break;
 
-                    case QEvent::Resize:
+                case QEvent::Resize:
                     {
                         positionSideWidgets(cbWidget);
                     }
                     break;
 
-                    case QEvent::DynamicPropertyChange:
+                case QEvent::DynamicPropertyChange:
                     {
                         auto styleSheet = StyleManager::styleSheetStyle(cbWidget);
+#ifndef MESON_BUILD
                         styleSheet->repolish(cbWidget);
+#endif
                     }
                     break;
 
-                    // Only allow wheel events when the combo box has focus
-                    case QEvent::Wheel:
+                // Only allow wheel events when the combo box has focus
+                case QEvent::Wheel:
                     {
                         if (cbWidget->hasFocus())
                         {
@@ -166,12 +169,12 @@ namespace AzQtComponents
 
                 switch (event->type())
                 {
-                    case QEvent::Show:
+                case QEvent::Show:
                     {
                         newHasPopupOpen = true;
                     }
-                    // intentional fall-through
-                    case QEvent::Hide:
+                // intentional fall-through
+                case QEvent::Hide:
                     {
                         if (!itemView->parent())
                         {
@@ -221,7 +224,7 @@ namespace AzQtComponents
             if (option && m_combo && m_combo->view()->selectionMode() == QAbstractItemView::SingleSelection)
             {
                 option->features |= QStyleOptionViewItem::HasCheckIndicator;
-                auto *style = qobject_cast<Style *>(m_combo->style());
+                auto* style = qobject_cast<Style*>(m_combo->style());
                 Qt::CheckState checkState;
                 if (style && style->hasClass(m_combo, g_customCheckStateClass))
                 {
@@ -261,7 +264,7 @@ namespace AzQtComponents
         config.placeHolderTextColor = QColor("#999999");
         config.framelessTextColor = QColor(Qt::white);
         config.errorImage = QStringLiteral(":/stylesheet/img/UI20/lineedit-error.svg");
-        config.errorImageSize = {16, 16};
+        config.errorImageSize = { 16, 16 };
         config.errorImageSpacing = 4;
         config.itemPadding = 0; // Adjust the size to line up the right side of the combobox.
         config.leftAdjust = 26; // Line up the dropdown items with the box contents.
@@ -316,7 +319,8 @@ namespace AzQtComponents
         if (comboBox)
         {
             s_comboBoxWatcher->m_config = config;
-            QObject::connect(comboBox, qOverload<int>(&QComboBox::currentIndexChanged), s_comboBoxWatcher, &ComboBoxWatcher::updateErrorStateSlot);
+            QObject::connect(
+                comboBox, qOverload<int>(&QComboBox::currentIndexChanged), s_comboBoxWatcher, &ComboBoxWatcher::updateErrorStateSlot);
 
             // The default menu combobox delegate is not stylishable via qss
             comboBox->setItemDelegate(new ComboBoxItemDelegate(comboBox, comboBox->view()));
@@ -326,7 +330,7 @@ namespace AzQtComponents
                 QPalette pal = le->palette();
 #if !defined(AZ_PLATFORM_LINUX)
                 pal.setColor(QPalette::PlaceholderText, config.placeHolderTextColor);
-#endif //!defined(AZ_PLATFORM_LINUX)
+#endif //! defined(AZ_PLATFORM_LINUX)
                 le->setPalette(pal);
             }
 
@@ -371,7 +375,13 @@ namespace AzQtComponents
         return comboBox;
     }
 
-    QSize ComboBox::sizeFromContents(const Style* style, QStyle::ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget, const ComboBox::Config& config)
+    QSize ComboBox::sizeFromContents(
+        const Style* style,
+        QStyle::ContentsType type,
+        const QStyleOption* option,
+        const QSize& size,
+        const QWidget* widget,
+        const ComboBox::Config& config)
     {
         Q_UNUSED(config);
 
@@ -391,13 +401,15 @@ namespace AzQtComponents
 
     QRect ComboBox::comboBoxListBoxPopupRect(const Style* style, const QStyleOption* option, const QWidget* widget, const Config& config)
     {
-        QRect r = style->QCommonStyle::subControlRect(QStyle::CC_ComboBox, static_cast<const QStyleOptionComplex*>(option), QStyle::SC_ComboBoxListBoxPopup, widget);
+        QRect r = style->QCommonStyle::subControlRect(
+            QStyle::CC_ComboBox, static_cast<const QStyleOptionComplex*>(option), QStyle::SC_ComboBoxListBoxPopup, widget);
         r.setWidth(r.width() + config.itemPadding);
         r.setLeft(r.left() - config.leftAdjust);
         return r;
     }
 
-    bool ComboBox::drawComboBox(const Style* style, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool ComboBox::drawComboBox(
+        const Style* style, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         Q_UNUSED(config);
 
@@ -412,7 +424,8 @@ namespace AzQtComponents
         return true;
     }
 
-    bool ComboBox::drawComboBoxLabel(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool ComboBox::drawComboBoxLabel(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         auto opt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
         if (!opt || opt->frame)
@@ -423,11 +436,14 @@ namespace AzQtComponents
         QStyleOptionComboBox cb(*opt);
         cb.palette.setColor(QPalette::Text, config.framelessTextColor);
         const QRect editRect = style->proxy()->subControlRect(QStyle::CC_ComboBox, &cb, QStyle::SC_ComboBoxEditField, widget);
-        style->proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0), Qt::AlignLeft | Qt::AlignVCenter, cb.palette, cb.state & QStyle::State_Enabled, cb.currentText, QPalette::Text);
+        style->proxy()->drawItemText(
+            painter, editRect.adjusted(1, 0, -1, 0), Qt::AlignLeft | Qt::AlignVCenter, cb.palette, cb.state & QStyle::State_Enabled,
+            cb.currentText, QPalette::Text);
         return true;
     }
 
-    bool ComboBox::drawIndicatorArrow(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool ComboBox::drawIndicatorArrow(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         auto opt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
         if (!opt || opt->frame)
@@ -443,7 +459,8 @@ namespace AzQtComponents
         return true;
     }
 
-    bool ComboBox::drawItemCheckIndicator(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool ComboBox::drawItemCheckIndicator(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         Q_UNUSED(config);
 
@@ -488,4 +505,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include <Components/Widgets/moc_ComboBox.cpp>
+#endif

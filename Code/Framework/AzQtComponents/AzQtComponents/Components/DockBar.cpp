@@ -8,12 +8,12 @@
 
 #include <AzQtComponents/Components/DockBar.h>
 
-#include <QLinearGradient>
-#include <QPainter>
-#include <QRect>
 #include <QFont>
 #include <QFontMetrics>
+#include <QLinearGradient>
+#include <QPainter>
 #include <QPixmapCache>
+#include <QRect>
 
 // Constant for the dock bar text font family
 static const char* g_dockBarFontFamily = "Open Sans";
@@ -23,7 +23,6 @@ static const int g_dockBarFontPointSize = 8;
 static const char* g_applicationIconPath = ":/stylesheet/img/ly_application_icon.png";
 // Constant for dock bar tear handle icon path
 static const char* g_dockBarTearIconPath = ":/stylesheet/img/titlebar_tear.png";
-
 
 namespace AzQtComponents
 {
@@ -122,35 +121,11 @@ namespace AzQtComponents
     {
         if (active)
         {
-            return {
-                {
-                    204, 204, 204
-                },{
-                    33, 34, 35
-                },{
-                    64, 68, 69
-                },{
-                    64, 72, 80
-                },{
-                    54, 61, 68
-                }
-            };
+            return { { 204, 204, 204 }, { 33, 34, 35 }, { 64, 68, 69 }, { 64, 72, 80 }, { 54, 61, 68 } };
         }
         else
         {
-            return {
-                {
-                    204, 204, 204
-                },{
-                    33, 34, 35
-                },{
-                    64, 68, 69
-                },{
-                    65, 68, 69
-                },{
-                    54, 56, 57
-                }
-            };
+            return { { 204, 204, 204 }, { 33, 34, 35 }, { 64, 68, 69 }, { 65, 68, 69 }, { 54, 56, 57 } };
         }
     }
 
@@ -176,8 +151,8 @@ namespace AzQtComponents
     /**
      * Draw the specified title on our dock tab bar
      */
-    void DockBar::drawTabTitle(QPainter* painter, int leftContentWidth, const QRect& area,
-        int buttonsX, const QColor& color, const QString& title)
+    void DockBar::drawTabTitle(
+        QPainter* painter, int leftContentWidth, const QRect& area, int buttonsX, const QColor& color, const QString& title)
     {
         if (title.isEmpty())
         {
@@ -207,4 +182,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_DockBar.cpp"
+#endif

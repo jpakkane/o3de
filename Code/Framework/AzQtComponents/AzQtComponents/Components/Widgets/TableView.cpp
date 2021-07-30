@@ -8,21 +8,21 @@
 
 #include <AzQtComponents/Components/Widgets/TableView.h>
 
+#include <AzCore/Casting/numeric_cast.h>
+#include <AzQtComponents/Components/ConfigHelpers.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <AzQtComponents/Components/ConfigHelpers.h>
-#include <AzCore/Casting/numeric_cast.h>
 
 #include <QHeaderView>
+#include <QListView>
 #include <QPainter>
 #include <QSettings>
+#include <QSortFilterProxyModel>
 #include <QStyleOptionHeader>
 #include <QStyleOptionViewItem>
-#include <QSortFilterProxyModel>
+#include <QTableView>
 #include <QTextLayout>
 #include <QTimer>
-#include <QTableView>
-#include <QListView>
 
 #include <QtGui/private/qtextengine_p.h>
 
@@ -118,13 +118,16 @@ namespace AzQtComponents
         //
         // The something else is to queue our handling of selection change events, when it comes to
         // setting the size of the expanding rows.
-        QTimer::singleShot(0, this, [this] {
-            if (m_expandOnSelection)
+        QTimer::singleShot(
+            0, this,
+            [this]
             {
-                const QModelIndexList indexes = selectedIndexes();
-                selectRow(indexes.isEmpty() ? QModelIndex() : indexes.first());
-            }
-        });
+                if (m_expandOnSelection)
+                {
+                    const QModelIndexList indexes = selectedIndexes();
+                    selectRow(indexes.isEmpty() ? QModelIndex() : indexes.first());
+                }
+            });
     }
 
     void TableView::updateGeometries()
@@ -145,7 +148,8 @@ namespace AzQtComponents
         handleResize();
     }
 
-    bool TableView::drawHeader(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool TableView::drawHeader(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         const auto headerViewOption = qstyleoption_cast<const QStyleOptionHeader*>(option);
         if (!headerViewOption)
@@ -153,8 +157,7 @@ namespace AzQtComponents
             return false;
         }
 
-        if (!((headerViewOption->state & QStyle::State_Enabled) &&
-            widget->underMouse()))
+        if (!((headerViewOption->state & QStyle::State_Enabled) && widget->underMouse()))
         {
             return false;
         }
@@ -177,7 +180,8 @@ namespace AzQtComponents
         return true;
     }
 
-    bool TableView::drawHeaderSection(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
+    bool TableView::drawHeaderSection(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const Config& config)
     {
         Q_UNUSED(widget);
         Q_UNUSED(style);
@@ -238,7 +242,8 @@ namespace AzQtComponents
         return true;
     }
 
-    QRect TableView::itemViewItemRect(const Style* style, QStyle::SubElement element, const QStyleOptionViewItem* option, const QWidget* widget, const Config& config)
+    QRect TableView::itemViewItemRect(
+        const Style* style, QStyle::SubElement element, const QStyleOptionViewItem* option, const QWidget* widget, const Config& config)
     {
         auto tableView = qobject_cast<const TableView*>(widget);
         if (!tableView)
@@ -256,7 +261,13 @@ namespace AzQtComponents
         return delegate->itemViewItemRect(style, element, option, widget, config);
     }
 
-    QSize TableView::sizeFromContents(const Style* style, QStyle::ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget, const Config& config)
+    QSize TableView::sizeFromContents(
+        const Style* style,
+        QStyle::ContentsType type,
+        const QStyleOption* option,
+        const QSize& contentsSize,
+        const QWidget* widget,
+        const Config& config)
     {
         Q_UNUSED(contentsSize);
         Q_UNUSED(config);
@@ -265,7 +276,7 @@ namespace AzQtComponents
         if (type == QStyle::CT_HeaderSection && header && header->orientation() == Qt::Horizontal)
         {
             QSize sz;
-            if (const QStyleOptionHeader *hdr = qstyleoption_cast<const QStyleOptionHeader *>(option))
+            if (const QStyleOptionHeader* hdr = qstyleoption_cast<const QStyleOptionHeader*>(option))
             {
                 bool nullIcon = hdr->icon.isNull();
                 int margin = style->pixelMetric(QStyle::PM_HeaderMargin, hdr, widget);
@@ -392,7 +403,7 @@ namespace AzQtComponents
 
         // tell the delegates to clear any caches
         delegate->clearCachedValues();
-        
+
         // default these to known, invalid values
         int height = -1;
         int row = -1;
@@ -418,7 +429,6 @@ namespace AzQtComponents
                 // reselect the same row, so that height/width calculations are re-run
                 selectRow(indexes.first());
             }
-            
         }
     }
 
@@ -429,14 +439,14 @@ namespace AzQtComponents
             switch (role)
             {
             case Qt::SizeHintRole:
-            {
-                if (m_selectedRow == index.row())
                 {
-                    return QSize(-1, m_selectedRowHeight);
-                }
+                    if (m_selectedRow == index.row())
+                    {
+                        return QSize(-1, m_selectedRowHeight);
+                    }
 
-                break;
-            }
+                    break;
+                }
 
             case IsSelectedRole:
                 return (m_selectedRow == index.row());
@@ -454,17 +464,17 @@ namespace AzQtComponents
     {
         const int oldRow = m_selectedRow;
         const int oldRowHeight = m_selectedRowHeight;
-        m_selectedRow = qBound(-1, selectedRow, rowCount() -1);
+        m_selectedRow = qBound(-1, selectedRow, rowCount() - 1);
         m_selectedRowHeight = m_selectedRow == -1 ? -1 : height;
 
         if (oldRow != -1 && oldRow != m_selectedRow)
         {
-            emit dataChanged(index(oldRow, 0), index(oldRow, columnCount() -1), { Qt::SizeHintRole });
+            emit dataChanged(index(oldRow, 0), index(oldRow, columnCount() - 1), { Qt::SizeHintRole });
         }
 
         if (m_selectedRow != -1 && (oldRow != m_selectedRow || oldRowHeight != m_selectedRowHeight))
         {
-            emit dataChanged(index(m_selectedRow, 0), index(m_selectedRow, columnCount() -1), { Qt::SizeHintRole });
+            emit dataChanged(index(m_selectedRow, 0), index(m_selectedRow, columnCount() - 1), { Qt::SizeHintRole });
         }
     }
 
@@ -550,7 +560,7 @@ namespace AzQtComponents
     }
 
     // Copied out of qcommonstyle.cpp, because it's not exposed anywhere useful that we can get at
-    static QSizeF viewItemTextLayout(QTextLayout &textLayout, int lineWidth)
+    static QSizeF viewItemTextLayout(QTextLayout& textLayout, int lineWidth)
     {
         qreal height = 0;
         qreal widthUsed = 0;
@@ -657,7 +667,12 @@ namespace AzQtComponents
         return false;
     }
 
-    QRect TableViewItemDelegate::itemViewItemRect(const AzQtComponents::Style* style, QStyle::SubElement element, const QStyleOptionViewItem* option, const QWidget* widget, const AzQtComponents::TableView::Config& config)
+    QRect TableViewItemDelegate::itemViewItemRect(
+        const AzQtComponents::Style* style,
+        QStyle::SubElement element,
+        const QStyleOptionViewItem* option,
+        const QWidget* widget,
+        const AzQtComponents::TableView::Config& config)
     {
         Q_UNUSED(style);
         Q_UNUSED(element);
@@ -672,4 +687,6 @@ namespace AzQtComponents
     }
 }; // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_TableView.cpp"
+#endif

@@ -6,24 +6,25 @@
  *
  */
 
-#include <AzQtComponents/Components/Widgets/BrowseEdit.h>
-#include <AzQtComponents/Components/Widgets/PushButton.h>
 #include <AzQtComponents/Components/Style.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <QPushButton>
+#include <AzQtComponents/Components/Widgets/BrowseEdit.h>
+#include <AzQtComponents/Components/Widgets/PushButton.h>
 #include <QHBoxLayout>
-AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QTextFormat::d': class 'QSharedDataPointer<QTextFormatPrivate>' needs to have dll-interface to be used by clients of class 'QTextFormat'
+#include <QPushButton>
+AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QTextFormat::d': class 'QSharedDataPointer<QTextFormatPrivate>' needs to
+                                                          // have dll-interface to be used by clients of class 'QTextFormat'
 #include <QLineEdit>
 AZ_POP_DISABLE_WARNING
-#include <QIcon>
-#include <QPainter>
-#include <QStyleOption>
-#include <QMouseEvent>
-#include <QSettings>
-#include <QPushButton>
-#include <QToolTip>
 #include <QAction>
+#include <QIcon>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPushButton>
+#include <QSettings>
+#include <QStyleOption>
 #include <QStyleOptionFrame>
+#include <QToolTip>
 
 namespace AzQtComponents
 {
@@ -200,19 +201,19 @@ namespace AzQtComponents
         {
             switch (event->type())
             {
-                case QEvent::MouseButtonDblClick:
-                    if (isLineEditReadOnly())
-                    {
-                        Q_EMIT attachedButtonTriggered();
-                        return true;
-                    }
-                    break;
-                case QEvent::FocusIn:
-                case QEvent::FocusOut:
-                    update();
-                    break;
-                default:
-                    break;
+            case QEvent::MouseButtonDblClick:
+                if (isLineEditReadOnly())
+                {
+                    Q_EMIT attachedButtonTriggered();
+                    return true;
+                }
+                break;
+            case QEvent::FocusIn:
+            case QEvent::FocusOut:
+                update();
+                break;
+            default:
+                break;
             }
         }
 
@@ -223,15 +224,15 @@ namespace AzQtComponents
     {
         switch (event->type())
         {
-            case QEvent::ToolTip:
+        case QEvent::ToolTip:
             {
                 const auto he = static_cast<QHelpEvent*>(event);
                 const QString tooltipText = hasAcceptableInput() ? toolTip() : m_data->m_errorToolTip;
                 QToolTip::showText(he->globalPos(), tooltipText, this, QRect(), toolTipDuration());
                 return true;
             }
-            default:
-                break;
+        default:
+            break;
         }
         return QFrame::event(event);
     }
@@ -295,7 +296,8 @@ namespace AzQtComponents
         return browseEdit;
     }
 
-    bool BrowseEdit::drawFrame(const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const BrowseEdit::Config& config)
+    bool BrowseEdit::drawFrame(
+        const Style* style, const QStyleOption* option, QPainter* painter, const QWidget* widget, const BrowseEdit::Config& config)
     {
         const auto browserEdit = qobject_cast<const BrowseEdit*>(widget);
         if (!browserEdit)
@@ -369,4 +371,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/Widgets/moc_BrowseEdit.cpp"
+#endif

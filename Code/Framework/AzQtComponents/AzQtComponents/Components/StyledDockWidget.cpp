@@ -8,10 +8,9 @@
 
 #include <AzQtComponents/Components/DockMainWindow.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
-#include <AzQtComponents/Components/DockMainWindow.h>
+#include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
 #include <AzQtComponents/Components/Titlebar.h>
 #include <AzQtComponents/Components/WindowDecorationWrapper.h>
-#include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
 
 #include <QGuiApplication>
 #include <QMainWindow>
@@ -33,7 +32,7 @@ namespace AzQtComponents
         // Forward declare these since they will be defined per platform
         void HandleFloatingWindow(QWidget* floatingWindow);
         bool FloatingWindowsSupportMinimize();
-    }
+    } // namespace Platform
 
     static bool forceSkipTitleBarOverdraw()
     {
@@ -122,7 +121,8 @@ namespace AzQtComponents
         QCloseEvent closeEvent;
         QCoreApplication::sendEvent(widget(), &closeEvent);
 
-        // If widget accepted the close event, we delete the dockwidget, which will also delete the child widget in case it doesn't have Qt::WA_DeleteOnClose
+        // If widget accepted the close event, we delete the dockwidget, which will also delete the child widget in case it doesn't have
+        // Qt::WA_DeleteOnClose
         if (!closeEvent.isAccepted())
         {
             // Widget doesn't want to close
@@ -302,4 +302,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyledDockWidget.cpp"
+#endif

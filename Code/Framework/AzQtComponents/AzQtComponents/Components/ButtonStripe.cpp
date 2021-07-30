@@ -8,8 +8,8 @@
 
 #include <AzQtComponents/Components/ButtonStripe.h>
 
-#include <QGridLayout>
 #include <QButtonGroup>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QVariant>
 
@@ -48,7 +48,10 @@ namespace AzQtComponents
             m_gridLayout->addWidget(pushButton, 0, m_gridLayout->columnCount());
             m_buttons.append(pushButton);
 
-            connect(pushButton, &QPushButton::clicked, this, [this, pushButton] {
+            connect(
+                pushButton, &QPushButton::clicked, this,
+                [this, pushButton]
+                {
                     emit buttonClicked(m_buttons.indexOf(pushButton));
                 });
         }
@@ -64,6 +67,8 @@ namespace AzQtComponents
             m_buttons.at(index)->setChecked(true);
         }
     }
-}
+} // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_ButtonStripe.cpp"
+#endif

@@ -6,16 +6,15 @@
  *
  */
 
-
 #include <AzQtComponents/Components/FancyDockingDropZoneWidget.h>
 
-#include <QMainWindow>
+#include <AzQtComponents/Utilities/QtWindowUtilities.h>
 #include <QCloseEvent>
-#include <QPainter>
 #include <QGuiApplication>
+#include <QMainWindow>
+#include <QPainter>
 #include <QScreen>
 #include <QWindow>
-#include <AzQtComponents/Utilities/QtWindowUtilities.h>
 
 namespace AzQtComponents
 {
@@ -40,7 +39,8 @@ namespace AzQtComponents
         centerDropZoneIconPath = QString(":/stylesheet/img/UI20/docking/tabs_icon.svg");
     }
 
-    FancyDockingDropZoneWidget::FancyDockingDropZoneWidget(QMainWindow* mainWindow, QWidget* coordinatesRelativeTo, QScreen* screen, FancyDockingDropZoneState* dropZoneState)
+    FancyDockingDropZoneWidget::FancyDockingDropZoneWidget(
+        QMainWindow* mainWindow, QWidget* coordinatesRelativeTo, QScreen* screen, FancyDockingDropZoneState* dropZoneState)
         // NOTE: this will not work with multiple monitors if this widget has a parent. The floating drop zone
         // won't render on anything other than the parent's screen for some reason, if the parent is set.
         : QWidget(nullptr, Qt::WindowFlags(Qt::ToolTip | Qt::BypassWindowManagerHint | Qt::FramelessWindowHint))
@@ -71,7 +71,7 @@ namespace AzQtComponents
 
     void FancyDockingDropZoneWidget::Start()
     {
-        QWindow *window = windowHandle();
+        QWindow* window = windowHandle();
         if (!window)
         {
             // So we don't crash when setting a pixmap before having a window
@@ -353,4 +353,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_FancyDockingDropZoneWidget.cpp"
+#endif

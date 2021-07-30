@@ -6,22 +6,22 @@
  *
  */
 
-#include <AzQtComponents/Components/StyledDetailsTableView.h>
 #include <AzQtComponents/Components/StyledDetailsTableModel.h>
+#include <AzQtComponents/Components/StyledDetailsTableView.h>
 
-#include <QStyledItemDelegate>
-#include <QItemSelectionModel>
-#include <QHeaderView>
-#include <QProxyStyle>
-#include <QPainter>
 #include <QApplication>
-#include <QStyleFactory>
-#include <QDebug>
-#include <QScrollBar>
-#include <QKeyEvent>
-#include <QMimeData>
 #include <QClipboard>
+#include <QDebug>
+#include <QHeaderView>
+#include <QItemSelectionModel>
+#include <QKeyEvent>
 #include <QMenu>
+#include <QMimeData>
+#include <QPainter>
+#include <QProxyStyle>
+#include <QScrollBar>
+#include <QStyleFactory>
+#include <QStyledItemDelegate>
 #include <QTimer>
 
 namespace AzQtComponents
@@ -75,58 +75,57 @@ namespace AzQtComponents
             auto rect = QProxyStyle::subElementRect(element, option, widget);
             switch (element)
             {
-                case SE_ItemViewItemText:
-                case SE_ItemViewItemCheckIndicator:
-                case SE_ItemViewItemDecoration:
-                    if (option->state.testFlag(State_Selected))
+            case SE_ItemViewItemText:
+            case SE_ItemViewItemCheckIndicator:
+            case SE_ItemViewItemDecoration:
+                if (option->state.testFlag(State_Selected))
+                {
+                    auto vOpt = static_cast<const QStyleOptionViewItem*>(option);
+                    const auto offset = StyledDetailsTableDetailsInfo(*vOpt, vOpt->index).sizeHint.height();
+                    if (element == SE_ItemViewItemText)
                     {
-                        auto vOpt = static_cast<const QStyleOptionViewItem*>(option);
-                        const auto offset = StyledDetailsTableDetailsInfo(*vOpt, vOpt->index).sizeHint.height();
-                        if (element == SE_ItemViewItemText)
-                        {
-                            rect.setBottom(rect.bottom() - offset);
-                        }
-                        else
-                        {
-                            rect.setTop(rect.top() - offset);
-                        }
+                        rect.setBottom(rect.bottom() - offset);
                     }
-                    if (element == SE_ItemViewItemDecoration)
+                    else
                     {
-                        rect.moveLeft(rect.left() + StyledTreeDetailsPadding);
+                        rect.setTop(rect.top() - offset);
                     }
-                    break;
-                default:
-                    break;
+                }
+                if (element == SE_ItemViewItemDecoration)
+                {
+                    rect.moveLeft(rect.left() + StyledTreeDetailsPadding);
+                }
+                break;
+            default:
+                break;
             }
             return rect;
         }
 
-        void drawPrimitive(PrimitiveElement element, const QStyleOption* option,
-                           QPainter* painter, const QWidget* widget) const override
+        void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const override
         {
             switch (element)
             {
             case PE_PanelItemViewItem:
             case PE_PanelItemViewRow:
-            {
-                const auto cg = !option->state.testFlag(State_Enabled) ? QPalette::Disabled
-                              : option->state.testFlag(State_Active) ? QPalette::Normal
-                              : QPalette::Inactive;
+                {
+                    const auto cg = !option->state.testFlag(State_Enabled) ? QPalette::Disabled
+                        : option->state.testFlag(State_Active)             ? QPalette::Normal
+                                                                           : QPalette::Inactive;
 
-                if (option->state.testFlag(State_Selected))
-                {
-                    painter->fillRect(option->rect, option->palette.brush(cg, QPalette::Highlight));
-                }
-                else if (auto vOpt = qstyleoption_cast<const QStyleOptionViewItem*>(option))
-                {
-                    if (vOpt->features.testFlag(QStyleOptionViewItem::Alternate))
+                    if (option->state.testFlag(State_Selected))
                     {
-                        painter->fillRect(option->rect, option->palette.brush(cg, QPalette::AlternateBase));
+                        painter->fillRect(option->rect, option->palette.brush(cg, QPalette::Highlight));
                     }
+                    else if (auto vOpt = qstyleoption_cast<const QStyleOptionViewItem*>(option))
+                    {
+                        if (vOpt->features.testFlag(QStyleOptionViewItem::Alternate))
+                        {
+                            painter->fillRect(option->rect, option->palette.brush(cg, QPalette::AlternateBase));
+                        }
+                    }
+                    break;
                 }
-                break;
-            }
             default:
                 QProxyStyle::drawPrimitive(element, option, painter, widget);
                 break;
@@ -177,13 +176,12 @@ namespace AzQtComponents
                 // draw the pixmap, centered according to the maximum text height precalculated for this row
                 QPixmap pix = qvariant_cast<QPixmap>(decorationData);
                 int maxTextHeight = m_maximumTextHeights[index.row()];
-                QPoint pos = { pixmapOptions.rect.center().x(), pixmapOptions.rect.top() + (maxTextHeight  / 2) - (pix.height() / 2) };
+                QPoint pos = { pixmapOptions.rect.center().x(), pixmapOptions.rect.top() + (maxTextHeight / 2) - (pix.height() / 2) };
                 painter->drawPixmap(pos, pix);
             }
 
             if (!m_detailsOptions.contains(index.row()) &&
-                    (opt.state.testFlag(QStyle::State_Selected) ||
-                     index.data(StyledDetailsTableModel::HasOnlyDetails).toBool()))
+                (opt.state.testFlag(QStyle::State_Selected) || index.data(StyledDetailsTableModel::HasOnlyDetails).toBool()))
             {
                 m_detailsOptions.insert(index.row(), StyledDetailsTableDetailsInfo(copy, index).option);
             }
@@ -192,7 +190,7 @@ namespace AzQtComponents
         void DrawDetails(QWidget* viewport) const
         {
             QPainter painter(viewport);
-            for (const auto &opt: m_detailsOptions)
+            for (const auto& opt : m_detailsOptions)
             {
                 DrawItemViewItem(&painter, opt);
             }
@@ -206,7 +204,7 @@ namespace AzQtComponents
         {
             const auto widget = option.widget;
             const auto style = widget ? widget->style() : qApp->style();
-            
+
             QStyleOptionViewItem copy = option;
             copy.state &= ~(QStyle::State_Selected);
             style->drawControl(QStyle::CE_ItemViewItem, &copy, painter, widget);
@@ -247,7 +245,6 @@ namespace AzQtComponents
         }
 
     protected:
-
         void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const override
         {
             QStyledItemDelegate::initStyleOption(option, index);
@@ -338,22 +335,23 @@ namespace AzQtComponents
 
         m_resizeTimer->setSingleShot(true);
         m_resizeTimer->setInterval(0);
-        connect(m_resizeTimer, &QTimer::timeout, this, [this]()
-        {
-            resizeRowsToContents();
-            if (m_scrollOnInsert)
+        connect(
+            m_resizeTimer, &QTimer::timeout, this,
+            [this]()
             {
-                m_scrollOnInsert = false;
-                scrollToBottom();
-            }
+                resizeRowsToContents();
+                if (m_scrollOnInsert)
+                {
+                    m_scrollOnInsert = false;
+                    scrollToBottom();
+                }
 
-            scheduleDelayedItemsLayout();
-        });
+                scheduleDelayedItemsLayout();
+            });
 
-        auto startResizeTimer = static_cast<void(QTimer::*)(void)>(&QTimer::start);
+        auto startResizeTimer = static_cast<void (QTimer::*)(void)>(&QTimer::start);
         connect(horizontalHeader(), &QHeaderView::geometriesChanged, m_resizeTimer, startResizeTimer);
         connect(horizontalHeader(), &QHeaderView::sectionResized, m_resizeTimer, startResizeTimer);
-
     }
 
     void StyledDetailsTableView::setModel(QAbstractItemModel* model)
@@ -372,33 +370,37 @@ namespace AzQtComponents
 
         if (model)
         {
-            auto startResizeTimer = static_cast<void(QTimer::*)(void)>(&QTimer::start);
+            auto startResizeTimer = static_cast<void (QTimer::*)(void)>(&QTimer::start);
             connect(model, &QAbstractItemModel::layoutChanged, m_resizeTimer, startResizeTimer);
             connect(model, &QAbstractItemModel::rowsInserted, m_resizeTimer, startResizeTimer);
 
-            connect(model, &QAbstractItemModel::rowsAboutToBeInserted, this, [this]
-            {
-                m_scrollOnInsert = !selectionModel()->hasSelection()
-                    && (verticalScrollBar()->value() == verticalScrollBar()->maximum());
-            });
-            connect(model, &QAbstractItemModel::dataChanged, this,
-                [this](const QModelIndex&, const QModelIndex&, const QVector<int>& roles)
-            {
-                if (roles.contains(StyledDetailsTableModel::Details))
+            connect(
+                model, &QAbstractItemModel::rowsAboutToBeInserted, this,
+                [this]
                 {
-                    updateItemSelection(selectionModel()->selection());
-                }
-            });
+                    m_scrollOnInsert =
+                        !selectionModel()->hasSelection() && (verticalScrollBar()->value() == verticalScrollBar()->maximum());
+                });
+            connect(
+                model, &QAbstractItemModel::dataChanged, this,
+                [this](const QModelIndex&, const QModelIndex&, const QVector<int>& roles)
+                {
+                    if (roles.contains(StyledDetailsTableModel::Details))
+                    {
+                        updateItemSelection(selectionModel()->selection());
+                    }
+                });
         }
 
         if (selectionModel())
         {
-            connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
-                    [this](const QItemSelection& sel, const QItemSelection& desel)
-            {
-                updateItemSelection(desel);
-                updateItemSelection(sel);
-            });
+            connect(
+                selectionModel(), &QItemSelectionModel::selectionChanged, this,
+                [this](const QItemSelection& sel, const QItemSelection& desel)
+                {
+                    updateItemSelection(desel);
+                    updateItemSelection(sel);
+                });
         }
     }
 
@@ -423,8 +425,7 @@ namespace AzQtComponents
         QTableView::keyPressEvent(ev);
     }
 
-    QItemSelectionModel::SelectionFlags StyledDetailsTableView::selectionCommand(
-        const QModelIndex& index, const QEvent* event) const
+    QItemSelectionModel::SelectionFlags StyledDetailsTableView::selectionCommand(const QModelIndex& index, const QEvent* event) const
     {
         auto base = QTableView::selectionCommand(index, event);
         if (!selectionModel()->isSelected(index) || event->type() == QEvent::MouseMove ||
@@ -452,7 +453,6 @@ namespace AzQtComponents
             return;
         }
 
-
         auto index = selection.first().topLeft();
 
         const QString details = index.data(StyledDetailsTableModel::Details).toString();
@@ -478,15 +478,13 @@ namespace AzQtComponents
             const static auto cellsToHtml = [](const QStringList cells)
             {
                 QString row;
-                for (const auto &cell: cells)
+                for (const auto& cell : cells)
                 {
                     row += htmlCellFormat.arg(cell);
                 }
                 return row;
             };
-            qdata->setHtml(htmlFormat.arg(cellsToHtml(cells),
-                                         QString::number(model()->columnCount()),
-                                         htmlCellFormat.arg(details)));
+            qdata->setHtml(htmlFormat.arg(cellsToHtml(cells), QString::number(model()->columnCount()), htmlCellFormat.arg(details)));
         }
         clipboard->setMimeData(qdata);
     }
@@ -504,4 +502,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyledDetailsTableView.cpp"
+#endif

@@ -7,10 +7,10 @@
  */
 #include <AzCore/Debug/Trace.h>
 #include <AzQtComponents/Components/StylesheetPreprocessor.h>
-#include <QtCore/QObject>
+#include <QRegularExpression>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
-#include <QRegularExpression>
+#include <QtCore/QObject>
 
 namespace
 {
@@ -39,7 +39,7 @@ namespace AzQtComponents
         QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
         QJsonObject rootObject = doc.object();
 
-        //load in the stylesheet variables
+        // load in the stylesheet variables
         if (rootObject.contains(cStylesheetVariablesKey))
         {
             QJsonObject variablesObject = rootObject.value(cStylesheetVariablesKey).toObject();
@@ -57,7 +57,9 @@ namespace AzQtComponents
     {
         enum class ParseState
         {
-            Normal, Variable, Done
+            Normal,
+            Variable,
+            Done
         };
 
         ParseState state = ParseState::Normal;
@@ -79,15 +81,14 @@ namespace AzQtComponents
                 default:
                     out.append(*i);
                     i++;
-                }
-                ;
+                };
             }
 
             while (state == ParseState::Variable && i != stylesheetData.end())
             {
                 char c = i->toLatin1();
 
-                //All characters valid in identifier
+                // All characters valid in identifier
                 if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
                 {
                     varName.append(*i);
@@ -95,7 +96,7 @@ namespace AzQtComponents
                 }
                 else
                 {
-                    //We are finished with reading the current varName
+                    // We are finished with reading the current varName
                     out.append(GetValueByName(varName));
                     varName.clear();
                     out.append(*i);
@@ -108,7 +109,6 @@ namespace AzQtComponents
 
         return out;
     }
-
 
     QString StylesheetPreprocessor::GetValueByName(const QString& name)
     {
@@ -156,11 +156,8 @@ namespace AzQtComponents
                         }
 
                         color.setRgb(
-                            colorComponents[0].trimmed().toInt(),
-                            colorComponents[1].trimmed().toInt(),
-                            colorComponents[2].trimmed().toInt(),
-                            colorComponents[3].trimmed().toInt()
-                        );
+                            colorComponents[0].trimmed().toInt(), colorComponents[1].trimmed().toInt(),
+                            colorComponents[2].trimmed().toInt(), colorComponents[3].trimmed().toInt());
 
                         colorSet = true;
                     }
@@ -179,4 +176,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StylesheetPreprocessor.cpp"
+#endif

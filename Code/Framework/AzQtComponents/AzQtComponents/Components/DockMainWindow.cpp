@@ -10,7 +10,6 @@
 
 #include <AzQtComponents/Components/DockMainWindow.h>
 
-
 namespace AzQtComponents
 {
     static const char* FancyDockingOwnerPropertyName = "fancydocking_owner";
@@ -46,4 +45,6 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_DockMainWindow.cpp"
+#endif

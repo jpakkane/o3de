@@ -10,48 +10,47 @@
 #include <AzCore/IO/Path/Path.h>
 #include <AzCore/Settings/SettingsRegistryMergeUtils.h>
 #include <AzQtComponents/Components/StyleManager.h>
-#include <QTextStream>
 #include <QApplication>
 #include <QPalette>
-AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QFileInfo::d_ptr': class 'QSharedDataPointer<QFileInfoPrivate>' needs to have dll-interface to be used by clients of class 'QFileInfo'
+#include <QTextStream>
+AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QFileInfo::d_ptr': class 'QSharedDataPointer<QFileInfoPrivate>' needs to
+                                                          // have dll-interface to be used by clients of class 'QFileInfo'
 #include <QDir>
 AZ_POP_DISABLE_WARNING
-#include <QString>
+#include <QDebug>
 #include <QFile>
 #include <QFontDatabase>
-#include <QStyleFactory>
 #include <QPointer>
+#include <QString>
 #include <QStyle>
+#include <QStyleFactory>
 #include <QWidget>
-#include <QDebug>
 
 #include <QtWidgets/private/qstylesheetstyle_p.h>
 
-#include <AzQtComponents/Components/StylesheetPreprocessor.h>
-#include <AzQtComponents/Utilities/QtPluginPaths.h>
-#include <AzQtComponents/Components/StyleSheetCache.h>
-#include <AzQtComponents/Components/Style.h>
-#include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
 #include <AzQtComponents/Components/AutoCustomWindowDecorations.h>
+#include <AzQtComponents/Components/Style.h>
+#include <AzQtComponents/Components/StyleSheetCache.h>
+#include <AzQtComponents/Components/StylesheetPreprocessor.h>
+#include <AzQtComponents/Components/TitleBarOverdrawHandler.h>
+#include <AzQtComponents/Utilities/QtPluginPaths.h>
 
 namespace AzQtComponents
 {
-
-    constexpr QStringView g_styleSheetRelativePath {u"Code/Framework/AzQtComponents/AzQtComponents/Components/Widgets"};
-    constexpr QStringView g_styleSheetResourcePath {u":AzQtComponents/Widgets"};
-    constexpr QStringView g_globalStyleSheetName {u"BaseStyleSheet.qss"};
-    constexpr QStringView g_searchPathPrefix {u"AzQtComponentWidgets"};
+    constexpr QStringView g_styleSheetRelativePath{ u"Code/Framework/AzQtComponents/AzQtComponents/Components/Widgets" };
+    constexpr QStringView g_styleSheetResourcePath{ u":AzQtComponents/Widgets" };
+    constexpr QStringView g_globalStyleSheetName{ u"BaseStyleSheet.qss" };
+    constexpr QStringView g_searchPathPrefix{ u"AzQtComponentWidgets" };
 
     StyleManager* StyleManager::s_instance = nullptr;
 
     static QStyle* createBaseStyle()
     {
         return QStyleFactory::create("Fusion");
-
     }
 
-    void StyleManager::addSearchPaths(const QString& searchPrefix, const QString& pathOnDisk, const QString& qrcPrefix,
-        const AZ::IO::PathView& engineRootPath)
+    void StyleManager::addSearchPaths(
+        const QString& searchPrefix, const QString& pathOnDisk, const QString& qrcPrefix, const AZ::IO::PathView& engineRootPath)
     {
         if (!s_instance)
         {
@@ -108,24 +107,31 @@ namespace AzQtComponents
             return nullptr;
         }
 
+#ifndef MESON_BUILD
         if (!QApplication::testAttribute(Qt::AA_ManualStyleSheetStyle))
         {
             qFatal("StyleManager::styleSheetStyle has not been implemented for automatically created QStyleSheetStyles");
             return nullptr;
         }
-
+#endif
         return s_instance->m_styleSheetStyle;
     }
 
-    QStyle *StyleManager::baseStyle(const QWidget *widget)
+    QStyle* StyleManager::baseStyle(const QWidget* widget)
     {
         const auto sss = styleSheetStyle(widget);
+#ifdef MESON_BUILD
+        return nullptr;
+#else
         return sss ? sss->baseStyle() : nullptr;
+#endif
     }
 
     void StyleManager::repolishStyleSheet(QWidget* widget)
     {
+#ifndef MESON_BUILD
         StyleManager::styleSheetStyle(widget)->repolish(widget);
+#endif
     }
 
     StyleManager::StyleManager(QObject* parent)
@@ -160,10 +166,10 @@ namespace AzQtComponents
             return;
         }
         s_instance = this;
-
+#ifndef MESON_BUILD
         QApplication::setAttribute(Qt::AA_ManualStyleSheetStyle, true);
         QApplication::setAttribute(Qt::AA_PropagateStyleToChildren, true);
-
+#endif
         connect(application, &QCoreApplication::aboutToQuit, this, &StyleManager::cleanupStyles);
 
         initializeSearchPaths(application, engineRootPath);
@@ -178,17 +184,21 @@ namespace AzQtComponents
         m_autoCustomWindowDecorations->setMode(AutoCustomWindowDecorations::Mode_AnyWindow);
 
         // Style is chained as: Style -> QStyleSheetStyle -> native, meaning any CSS limitation can be tackled in Style.cpp
+#ifndef MESON_BUILD
         m_styleSheetStyle = new QStyleSheetStyle(createBaseStyle());
+#endif
         m_style = new Style(m_styleSheetStyle);
 
         QApplication::setStyle(m_style);
         m_style->setParent(this);
         refresh();
 
-        connect(m_stylesheetCache, &StyleSheetCache::styleSheetsChanged, this, [this]
-        {
-            refresh();
-        });
+        connect(
+            m_stylesheetCache, &StyleSheetCache::styleSheetsChanged, this,
+            [this]
+            {
+                refresh();
+            });
     }
 
     void StyleManager::cleanupStyles()
@@ -255,8 +265,9 @@ namespace AzQtComponents
     void StyleManager::refresh()
     {
         const auto globalStyleSheet = m_stylesheetCache->loadStyleSheet(g_globalStyleSheetName.toString());
+#ifndef MESON_BUILD
         m_styleSheetStyle->setGlobalSheet(globalStyleSheet);
-
+#endif
         // Iterate widgets and update the stylesheet (the base style has already been set)
         auto i = m_widgetToStyleSheetMap.constBegin();
         while (i != m_widgetToStyleSheetMap.constEnd())
@@ -280,13 +291,13 @@ namespace AzQtComponents
     }
 } // namespace AzQtComponents
 
+#ifndef MESON_BUILD
 #include "Components/moc_StyleManager.cpp"
+#endif
 
 #if defined(AZ_QT_COMPONENTS_STATIC)
-    // If we're statically compiling the lib, we need to include the compiled rcc resources
-    // somewhere to ensure that the linker doesn't optimize the symbols out (with Visual Studio at least)
-    // With dlls, there's no step to optimize out the symbols, so we don't need to do this.
-    #include <Components/rcc_resources.h>
+  // If we're statically compiling the lib, we need to include the compiled rcc resources
+// somewhere to ensure that the linker doesn't optimize the symbols out (with Visual Studio at least)
+// With dlls, there's no step to optimize out the symbols, so we don't need to do this.
+#include <Components/rcc_resources.h>
 #endif // #if defined(AZ_QT_COMPONENTS_STATIC)
-
-
